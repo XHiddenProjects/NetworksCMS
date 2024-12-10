@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html,body{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+body{
+    overflow-x: hidden;
+}
+:root,
+:host{
+    /*Utils*/
+    --nw-spacer: 1rem;
+    /*Home*/
+    --nw-home-nav-list-hover: rgba(166, 223, 241, 0.7);
+    --nw-home-nav-bg: rgba(49, 131, 183,0.86);
+    --nw-home-nav-color: #2d2d2d;
+    --nw-home-nav-color-active: #222121;
+    /*Installation*/
+    --nw-install-bg: rgb(94, 143, 217,.8);
+    --nw-intall-form-title: #5e5959;
+    --nw-install-form-subtitle: #2b3a3f;
+
+    /*Form*/
+    --nw-form-error: #c52121;
+}

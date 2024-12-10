@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="%PAGELANG%">
+    <head>
+        <title>%LANG=Home,title% - %WEBTITLE%</title>
+        %META_AUTHOR=%LANG=Project,author%%
+        %META_CHARSET=UTF-8%
+        %META_DESCRIPTION=%LANG=Install,description%%
+        %META_VIEWPORT%
+        %HEAD%
+    </head>
+    <body>
+        %BEFORELOAD%
+        <nav class="navbar navbar-expand-lg nw-home-nav">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" href="#">
+                    <img src="%PATH=NW_ASSETS%/icons/icon.webp" alt="networks_icon" width="64" height="64" class="d-inline-block object-fit-contain rounded"/>
+                    NetWorks
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#networkhomenav" aria-controls="networksContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="networkhomenav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        %LISTPAGES%
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        %FOOTERJS%
+        %AFTERLOAD%
+    </body>
+</html>

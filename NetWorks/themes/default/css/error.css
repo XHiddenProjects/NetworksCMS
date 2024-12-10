@@ -1,0 +1,12 @@
+@import url('./reset.css');
+.sysError h1{
+    font-size: 8rem;
+    display: flex;
+    justify-content: center;
+}
+.sysError h1 span{
+    display: block;
+}
+.sysError h3{
+    font-size: 5rem;
+}

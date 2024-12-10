@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="%PAGELANG%">
+    <head>
+        <title>%LANG=Install,title% - %LANG=Project,name%</title>
+        %META_AUTHOR=%LANG=Project,author%%
+        %META_CHARSET=UTF-8%
+        %META_DESCRIPTION=%LANG=Install,description%%
+        %META_VIEWPORT%
+        %HEAD%
+    </head>
+    <body>
+        %BEFORELOAD%
+
+        <div class="nw_install_form container-fluid position-absolute top-50 start-50 translate-middle">
+            <h1>%LANG=Project,name%</h1>
+            <div class="sqlform">
+                <h2>%LANG=SQL,sql%</h2>
+                <form method="post" novalidate>
+                    <div class="text-bg-danger w-100 p-3 rounded text-center fs-2 d-none" class="sqlforrm_err">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <span class="errmsg"></span>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="sqlserver"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=SQL,server%:</label>
+                            <input type="text" required id="sqlserver" name="sqlserver" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="sqlname"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,username%:</label>
+                            <input type="text" required id="sqlname" name="sqlname" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="sqlpsw">%LANG=Inputs,psw%:</label>
+                            <div class="psw_container">
+                                <input type="password" id="sqlpsw" name="sqlpsw" class="form-control"/>
+                                <i class="fa-solid fa-eye showPsw"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="sqldb"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=SQL,db%:</label>
+                            <input type="text" required value="networks" id="sqldb" name="sqldb" class="form-control"/>
+                        </div>
+                    </div>
+                    <button class="btn btn-success fs-2 w-100">%LANG=Pagination,next%</button>
+                </form>
+            </div>
+            <div class="adminform noshow">
+                <form method="post" novalidate>
+                    <div class="text-bg-danger w-100 p-3 rounded text-center fs-2 d-none" class="adminform_err">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <span class="errmsg"></span>
+                    </div>
+                    <h2>%LANG=Account,create%</h2>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="uname"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,username%</label>
+                            <input type="text" required class="form-control" id="uname" name="uname"/>
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="email"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,email%</label>
+                            <input type="email" required class="form-control" id="email" name="email"/>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="fname"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,fname%</label>
+                            <input type="text" class="form-control" required id="fname" name="fname"/>
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="mint">%LANG=Inputs,mint%</label>
+                            <input type="text" class="form-control" id="mint" name="mint" maxlength="1"/>
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="lname"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,lname%</label>
+                            <input type="text" class="form-control" required id="lname" name="lname"/>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label class="form-label" for="psw"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,psw%</label>
+                            <div class="psw_container">
+                                <input type="password" required class="form-control" id="psw" name="psw"/>
+                                <i class="fa-solid fa-eye showPsw"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="cpsw"><i class="fa-solid fa-asterisk text-danger"></i> %LANG=Inputs,cpsw%</label>
+                            <div class="psw_container">
+                                <input type="password" required class="form-control" id="cpsw" name="cpsw"/>
+                                <i class="fa-solid fa-eye showPsw"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success fs-2 w-100">%LANG=Pagination,next%</button>
+                </form>
+            </div>
+        </div>
+        %FOOTERJS%
+        %AFTERLOAD%
+    </body>
+</html>

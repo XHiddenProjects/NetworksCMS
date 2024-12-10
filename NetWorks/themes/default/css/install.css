@@ -1,0 +1,56 @@
+@import url('./reset.css');
+.psw_container{
+    position: relative;
+    padding: 0;
+}
+.psw_container .showPsw{
+    position: absolute;
+    top:50%;
+    right:2%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.nw_install_form{
+    background-color: var(--nw-install-bg);
+    width: calc(100% - 20%);
+    height: calc(100% - 30px);
+    border-radius: 15px;
+    padding-bottom: 5px;
+    overflow: auto;
+}
+.nw_install_form .sqlform,
+.nw_install_form .adminform{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    height: auto;
+}
+.nw_install_form .row{
+    padding: 4px;
+}
+.nw_install_form h1,
+.nw_install_form h2{
+    text-align: center;
+    color: var(--nw-intall-form-title);
+    font-weight: 800;
+}
+.nw_install_form h1{
+    font-size: 7vh;
+}
+.nw_install_form h2{
+    font-size: 6vh;
+    color: var(--nw-install-form-subtitle);
+}
+.nw_install_form .noshow{
+    display: none;
+}
+
+
+[required].err,
+:required.err{
+    transition: outline 150ms linear;
+    outline: 3px solid var(--nw-form-error);
+}
