@@ -5,9 +5,7 @@ use networks\Exception\FileHandlingException;
 use networks\libs\Lang;
 use SSQL;
 
-require_once('libs/lang.lib.php');
-require_once('libs/ssql.lib.php');
-
+require_once('autoloader.php');
 
 $lang = new Lang();
 
@@ -19,7 +17,9 @@ $lang = new Lang();
 (!defined('NW_ASSETS') ? define('NW_ASSETS',dirname(__FILE__).NW_DS.'assets') : '');
 (!defined('NW_LANG') ? define('NW_LANG',dirname(__FILE__).NW_DS.'languages') : '');
 (!defined('NW_DRAFTS') ? define('NW_DRAFTS',dirname(__FILE__).NW_DS.'drafts') : '');
+(!defined('NW_UPLOADS') ? define('NW_UPLOADS',dirname(__FILE__).NW_DS.'uploads') : '');
 (!defined('NW_SQL_CREDENTIALS') ? define('NW_SQL_CREDENTIALS',NW_ASSETS.NW_DS.'sql'.NW_DS.'credentals.json') : '');
+(!defined('NW_CHARSET') ? define('NW_CHARSET','UTF-8') : '');
 foreach(array_diff(scandir(NW_PLUGINS),['.','..']) as $plugins){
     try{
         if(file_exists(NW_PLUGINS.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php'))
@@ -29,6 +29,10 @@ foreach(array_diff(scandir(NW_PLUGINS),['.','..']) as $plugins){
         echo '<b>NetWorks File_Handling:</b> '.$e->getMessage().' <em>'.$e->getPath().'</em> on line '.$e->getLine();
     }
 }
+
+# Load non-loaded folders
+if(!file_exists(NW_DRAFTS)) mkdir(NW_DRAFTS);
+if(!file_exists(NW_UPLOADS)) mkdir(NW_UPLOADS);
 
 # Set Timezone
 if(file_exists(NW_SQL_CREDENTIALS)){

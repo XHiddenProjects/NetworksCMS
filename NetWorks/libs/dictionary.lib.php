@@ -6,20 +6,16 @@ use networks\libs\Plugins;
 use networks\libs\Web;
 use SSQL;
 
-require_once('users.lib.php');
-require_once('lang.lib.php');
-require_once('plugins.lib.php');
-require_once('web.lib.php');
-require_once('ssql.lib.php');
 require_once(dirname(__DIR__).'/init.php');
-
 (!defined('NW_DICTIONARY_USER') ? define('NW_DICTIONARY_DEFAULT',array(
     '%USER_LANGUAGE%'=>function(){return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);},
     '%USER_DATETIME%'=>function(){return date('Y-m-d H:i:s');},
     '%USER_DATE%'=>function(){return date('Y-m-d');},
     '%USER_TIME%'=>function(){return date('H:i:s');},
     '%USER_IP%'=>function(){return (new Users())->IP()['ip'];},
-    '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()['visibility'];}
+    '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()['visibility'];},
+    '%USER_IS_ONLINE%((.|\n)*?)%END%'=>function($e){if(isset($_COOKIE['user'])) return $e[1];},
+    '%USER_IS_OFFLINE%((.|\n)*?)%END%'=>function($e){if(!isset($_COOKIE['user'])) return $e[1];}
 )) : '');
 (!defined('NW_DICTIONARY_META') ? define('NW_DICTIONARY_META',array(
     '%META_CHARSET=(.+?)%'=>function($e){return '<meta charset="'.$e[1].'"/>';},
@@ -90,29 +86,24 @@ require_once(dirname(__DIR__).'/init.php');
 )) : '');
 (!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', array(
     '%LISTPAGES%'=>function(){
-        $noShow = array('install.php','.htaccess','config.php','init.php');
         $out='';
-        foreach(array_diff(scandir(NW_ROOT),['.','..']) as $page){
-            if(is_file(NW_ROOT.NW_DS.$page)&&!in_array($page,$noShow)){
-                $out.='<li class="nav-item">
-                    <a class="nav-link '.(isset((new Web())->getPath()[1]) ? (strtolower($page)===strtolower((new Web())->getPath()[count((new Web())->getPath()) - 1]) ? 'active' : '') : (strtolower($page)==='home.php' ? 'active' : '')).'" aria-current="page" href="'.($page==='home.php' ? './' : preg_replace('/\..*?$/','',$page)).'">'.ucfirst(preg_replace('/\..*?$/','',$page)).'</a>
-                </li>';
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            foreach($db->selectData('pages',['*']) as $page){
+                if(is_file(NW_ROOT.NW_DS.$page['pageName'].'.php')){
+                    $out.='<li class="nav-item d-flex align-items-center px-2">
+                        <i class="'.$page['pageIcon'].'"></i>
+                        <a class="nav-link '.(isset((new Web())->getPath()[1]) ? (strtolower($page['pageName'])===strtolower((new Web())->getPath()[count((new Web())->getPath()) - 1]) ? 'active' : '') : (strtolower($page['pageName'])==='home.php' ? 'active' : '')).'" aria-current="page" href="'.($page['pageName']==='home' ? './' : $page['pageName']).'">'.ucfirst($page['pageName']).'</a>
+                    </li>';
+                }
             }
         }
         return $out;
     },
     '%DOCERROR%'=>function(){
         return http_response_code();
-    },
-    '%PAGELANG%'=>function(){
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            $data = $db->selectData('config',['lang'])[0]['lang'];
-            $sql->close();
-            return explode('-',$data)[0];
-        }
     }
 )) : '');
 (!defined('NW_DICTIONARY_CONFIG') ? define('NW_DICTIONARY_CONFIG',array(
@@ -124,6 +115,76 @@ require_once(dirname(__DIR__).'/init.php');
             $data = $db->selectData('config',['title'])[0]['title'];
             $sql->close();
             return $data;
+        }
+    },
+    '%CONFIGLANG%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['lang'])[0]['lang'];
+            $sql->close();
+            return explode('-',$data)[0];
+        }
+    },
+    '%DEBUG%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['debug'])[0]['debug'];
+            $sql->close();
+            return $data;
+        }
+    },
+    '%DATEFORMAT%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['dFormat'])[0]['dFormat'];
+            $sql->close();
+            return $data;
+        }
+    },
+    '%DATEFORMAT%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['dFormat'])[0]['dFormat'];
+            $sql->close();
+            return $data;
+        }
+    },
+    '%THEME%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['theme'])[0]['theme'];
+            $sql->close();
+            return $data;
+        }
+    },
+    '%EDITOR%'=>function(){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        $sql = new SSQL();
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+            $db = $sql->selectDB($cred['db']);
+            $data = $db->selectData('config',['editor'])[0]['editor'];
+            $sql->close();
+            return $data;
+        }
+    },
+)) : '');
+(!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', array(
+    '%URL_PATH=(.*?)%((.|\n)*?)%END%'=>function($e){
+        $url = (new Web())->getPath();
+        if($url[0])
+            unset($url[0]);
+        if(strcmp(strtolower($e[1]),strtolower(implode('/',array_values($url))))==0){
+            return $e[2];
         }
     }
 )) : '');
@@ -147,7 +208,7 @@ class Dictionary{
      *
      * @param String $search Search for a target query. Ex: **%USERNAME%**
      * @param Callable $replace [Optional] - Replace the search with a value. Ex: **JohnDoe**
-     * @return this
+     * @return Dictionary
      */
     public function addItem(String $search, callable $replace) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
@@ -159,7 +220,7 @@ class Dictionary{
      * Drop and item from the dictionary
      *
      * @param String $search Search query to drop. Ex: **%USERNAME%**
-     * @return $this
+     * @return Dictionary
      */
     public function dropItem(String $search) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
@@ -200,7 +261,7 @@ class Dictionary{
      * @param String $search Search to look for. Ex: **%USERNAME%**
      * @param String $newSearch Search to replace with. Ex: **%NAME%**
      * @param Callable|null $replace [Optional] - Replace the value, leave _null_ to set as default replace
-     * @return void
+     * @return Dictionary
      */
     public function replaceItem(String $search, String $newSearch, callable|null $replace=null) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
@@ -214,11 +275,23 @@ class Dictionary{
     /**
      * Merages multiple dictionaries
      *
-     * @param Array<String> ...$dict
+     * @param Array<String> ...$dict Dictionary to convert into constants
      * @return array Merged dictionaries
      */
     public function merge(...$dict) : array {
         return array_merge(...$dict);
+    }
+    /**
+     * Undocumented function
+     *
+     * @param Array<String> ...$dict Dictionary to convert into constants
+     * @return void
+     */
+    public function toConst(...$dict):void{
+        $dict = array_merge(...$dict);
+        foreach($dict as $d=>$f){
+            if(!defined($d)) define($d,$f);
+        }
     }
 }
 ?>

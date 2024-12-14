@@ -1,11 +1,10 @@
 <?php
+
+use networks\libs\Dictionary;
 use networks\libs\Plugins;
 use networks\libs\Web;
-
-require_once(dirname(__DIR__,2).'/libs/plugins.lib.php');
 require_once(dirname(__DIR__,2).'/init.php');
-require_once(dirname(__DIR__,2).'/libs/web.lib.php');
-require_once(dirname(__DIR__,2).'/libs/ssql.lib.php');
+
 class Core extends Plugins{
     protected string $theme;
     public function __construct() {
@@ -25,20 +24,19 @@ class Core extends Plugins{
                     $out.='<link rel="stylesheet" href="'.(new Web(NW_THEMES.NW_DS.$this->theme.NW_DS.'css'.NW_DS.$file))->toAccessable().'"/>';
                 }
             }
-
-            $ssql = new SSQL();
-            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-            
-            if($ssql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-                $db = $ssql->selectDB($cred['db']);
-                $selectIcons = $db->selectData('config',['ico16','ico24','ico32','ico48','ico64','ico96','ico256','ico512']);
-                if($selectIcons){
-                    foreach($selectIcons[0] as $size=>$path)
-                        $out.='<link rel="icon" type="image/x-icon" href="'.$path.'" sizes="'.str_replace('ico','',$size).'x'.str_replace('ico','',$size).'"/>';
+            if(file_exists(NW_SQL_CREDENTIALS)){
+                $ssql = new SSQL();
+                $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+                
+                if($ssql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                    $db = $ssql->selectDB($cred['db']);
+                    $selectIcons = $db->selectData('config',['ico16','ico24','ico32','ico48','ico64','ico96','ico256','ico512']);
+                    if($selectIcons){
+                        foreach($selectIcons[0] as $size=>$path)
+                            $out.='<link rel="icon" type="image/x-icon" href="'.$path.'" sizes="'.str_replace('ico','',$size).'x'.str_replace('ico','',$size).'"/>';
+                    }
                 }
             }
-
-
             $out.='<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>';
             return $out;
         }

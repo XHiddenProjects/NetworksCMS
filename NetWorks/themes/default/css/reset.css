@@ -18,8 +18,8 @@ body{
     /*Home*/
     --nw-home-nav-list-hover: rgba(166, 223, 241, 0.7);
     --nw-home-nav-bg: rgba(49, 131, 183,0.86);
-    --nw-home-nav-color: #2d2d2d;
-    --nw-home-nav-color-active: #222121;
+    --nw-home-nav-color: #1c2534;
+    --nw-home-nav-color-active: #0c0c0c;
     /*Installation*/
     --nw-install-bg: rgb(94, 143, 217,.8);
     --nw-intall-form-title: #5e5959;

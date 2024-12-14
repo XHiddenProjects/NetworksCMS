@@ -14,7 +14,15 @@
         "passwordMatch": "Password don't match",
         "userAdd": "Cannot add user",
         "usernameExists": "Username already exists",
-        "404": "Page not found"
+        "MinMaxError":"Minimum must be less than the maximum!",
+        "RangeError": "The number is out of range"
+    },
+    "DocumentError":{
+        "400": "Bad Request",
+        "401": "Unauthorized",
+        "403": "Forbidden",
+        "404": "Page not found",
+        "500": "Internal Server Error"
     },
     "Inputs":{
         "username": "Username",
@@ -44,6 +52,10 @@
     },
     "Account":{
         "create": "Register Account",
-        "login": "Login"
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "Dashboard":{
+        "title":"Dashboard"
     }
 }

@@ -32,6 +32,24 @@ if($sql->setCredential($_REQUEST['server'],$_REQUEST['user'],$_REQUEST['psw'])){
     (new Web(NW_ASSETS.NW_DS.'icons'.NW_DS.'icon256.ico'))->toAccessable(),
     (new Web(NW_ASSETS.NW_DS.'icons'.NW_DS.'icon512.ico'))->toAccessable(),
     ]);
+        $db->addData('pages',[
+            'pageName',
+            'pageIcon',
+            'pageDraft'
+        ],[
+            'home',
+            'fa-solid fa-house',
+        (new Web(NW_DRAFTS.NW_DS.'home.html'))->toAccessable()
+        ]);
+        $db->addData('pages',[
+            'pageName',
+            'pageIcon',
+            'pageDraft'
+        ],[
+            'forum',
+            'fa-solid fa-comments',
+            (new Web(NW_DRAFTS.NW_DS.'forum.html'))->toAccessable()
+        ]);
         echo json_encode(['success'=>true],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $c = fopen(NW_SQL_CREDENTIALS,'w+');
         fwrite($c,json_encode(['server'=>$_REQUEST['server'],'user'=>$_REQUEST['user'],'psw'=>$_REQUEST['psw'],'db'=>$_REQUEST['db']],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));

@@ -11,18 +11,29 @@
          */
         public function __construct(String $lang='en', String $country='us') {
             $this->langObj = json_decode(file_get_contents(dirname(__DIR__).'/languages/'.strtolower($lang.'-'.$country).'.json'),true);
+            foreach(array_diff(scandir(dirname(__DIR__).'/plugins'),['.','..']) as $plugin){
+                if(file_exists(dirname(__DIR__).'/plugins/'.$plugin.'/lang/'.strtolower($lang.'-'.$country).'.json')){
+                    $this->langObj = array_merge($this->langObj, json_decode(file_get_contents(dirname(__DIR__).'/plugins/'.$plugin.'/lang/'.strtolower($lang.'-'.$country).'.json'),true));
+                }
+            }
         }
         /**
          * Recieve the value of the language.
          *
-         * @param String $type Type of language
-         * @param String $lookup Subject to the type
-         * @return String|False Returns the value of the type, otherwise False.
+         * @param mixed ...$lookup Subject to look for in array
+         * @return mixed Returns the value of the type, otherwise False.
          */
-        public function get(String $type, string $lookup) : String|False{
-            if(isset($this->langObj[$type])&&isset($this->langObj[$type][$lookup]))
-                return $this->langObj[$type][$lookup];
-            else return false;
+        public function get(string ...$lookup) : mixed{
+            $lastLook = null;
+            foreach($lookup as $look){
+                if(isset($this->langObj[$look])||isset($lastLook[$look])){
+                    if(!$lastLook)
+                        $lastLook = $this->langObj[$look];
+                    else
+                        $lastLook = $lastLook[$look];
+                }else return false;
+            }
+            return $lastLook;
         }
     }
 ?>
