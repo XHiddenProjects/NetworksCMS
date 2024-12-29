@@ -1,74 +1,94 @@
-document.querySelectorAll('.showPsw').forEach(e=>{
-    e.addEventListener('click',function(){
-        const psw = this.parentNode.querySelector('input');
-        if(psw.type==='password') {
-            this.className = this.className.replace('fa-eye','fa-eye-slash');
-            psw.type = 'text';
-        }
-        else {
-            this.className = this.className.replace('fa-eye-slash','fa-eye');
-            psw.type = 'password';
-        }
-    });
-});
-
-if(document.querySelector('#mint')){
-    document.querySelector('#mint').addEventListener('input',(v)=>{
-        v.target.value = v.target.value.toLocaleUpperCase();
-    });
-}
-
-document.querySelectorAll('.nw_install_form form').forEach(f=>{
-    f.addEventListener('submit',(e)=>{
-        e.preventDefault();
-        noErr=true;
-        document.querySelectorAll('div form *[required]').forEach(e=>{
-            e.addEventListener('input',()=>{
-                if(e.value!=='') e.classList.remove('err');
+$(document).ready(function() {
+    $('.nw_install_form form').each(function() {
+        $(this).on('submit', function(e) {
+            e.preventDefault();
+            let noErr = true;
+            $('div form *[required]').each(function() {
+                $(this).on('input', function() {
+                    if ($(this).val() !== '') $(this).removeClass('err');
+                });
+                if (!$(this).closest('.noshow').length) {
+                    if ($(this).val() === '') {
+                        $(this).addClass('err');
+                        noErr = false;
+                    } else {
+                        $(this).removeClass('err');
+                    }
+                }
             });
-            if(!e.closest('.noshow')){
-                if(e.value==='') {e.classList.add('err'); noErr=false;}
-                else e.classList.remove('err');
+            if (noErr) {
+                if ($(this).parent().hasClass('sqlform')) {
+                    $.ajax({
+                        url: `./assets/php/sql_check.php`,
+                        data: {
+                            server: $(this).find('#sqlserver').val(),
+                            user: $(this).find('#sqlname').val(),
+                            psw: $(this).find('#sqlpsw').val(),
+                            db: $(this).find('#sqldb').val()
+                        },
+                        success: function(d) {
+                            const e = JSON.parse(d);
+                            if (e['err']) {
+                                $(this).find('.errmsg').parent().removeClass('d-none');
+                                $(this).find('.errmsg').text(e['err']);
+                            } else {
+                                $(this).find('.errmsg').parent().addClass('d-none');
+                                $(this).parent().addClass('noshow');
+                                $('.adminform').removeClass('noshow');
+                            }
+                        }.bind(this),
+                        error: function(e, c) {
+                            console.log(`${e}: ${c}`);
+                        }
+                    });
+                }
+                if ($(this).parent().hasClass('adminform')) {
+                    $.ajax({
+                        url: `./assets/php/user.php`,
+                        data: {
+                            action: 'add',
+                            username: $(this).find('#uname').val(),
+                            email: $(this).find('#email').val(),
+                            psw: $(this).find('#psw').val(),
+                            cpsw: $(this).find('#cpsw').val(),
+                            fname: $(this).find('#fname').val(),
+                            mint: $(this).find('#mint').val(),
+                            lname: $(this).find('#lname').val(),
+                            perm: 'admin'
+                        },
+                        success: function(d) {
+                            const e = JSON.parse(d);
+                            if (e['err']) {
+                                $(this).find('.errmsg').parent().removeClass('d-none');
+                                $(this).find('.errmsg').text(e['err']);
+                            } else {
+                                window.open('./', '_self');
+                            }
+                        }.bind(this),
+                        error: function(e, c) {
+                            console.log(`${e}: ${c}`);
+                        }
+                    });
+                }
             }
         });
-        if(noErr){
-            if(f.parentNode.classList.contains('sqlform')){
-                (new Request(`./assets/php/sql_check.php?server=${f.querySelector('#sqlserver').value}&user=${f.querySelector('#sqlname').value}&psw=${f.querySelector('#sqlpsw').value}&db=${f.querySelector('#sqldb').value}`))
-                .send().onSuccess((d)=>{
-                    const e = JSON.parse(d);
-                    if(e['err']){
-                        f.querySelector('.errmsg').parentNode.classList.remove('d-none');
-                        f.querySelector('.errmsg').innerText = e['err'];
-                    }else {
-                        f.querySelector('.errmsg').parentNode.classList.add('d-none');
-                        f.parentNode.classList.add('noshow');
-                        document.querySelector('.adminform').classList.remove('noshow');
-                    }
-                }).onError((e,c)=>{
-                    console.log(`${e}: ${c}`);
-                });
-            }
-            
-            if(f.parentNode.classList.contains('adminform')){
-                (new Request(`./assets/php/user.php?action=add&username=${f.querySelector('#uname').value}&email=${f.querySelector('#email').value}&psw=${f.querySelector('#psw').value}&cpsw=${f.querySelector('#cpsw').value}&fname=${f.querySelector('#fname').value}&mint=${f.querySelector('#mint').value}&lname=${f.querySelector('#lname').value}&perm=admin`))
-                .send().onSuccess((d)=>{
-                    const e = JSON.parse(d);
-                    if(e['err']){
-                        f.querySelector('.errmsg').parentNode.classList.remove('d-none');
-                        f.querySelector('.errmsg').innerText = e['err'];
-                    }else {
-                        window.open('./','_self');
-                    }
-                }).onError((e,c)=>{
-                    console.log(`${e}: ${c}`);
-                })
-            }
-        }
     });
-});
-
-$(window).on('resize',function(){
-    if (window.innerWidth > 768) {
-        $('.navbar-collapse').collapse('hide');
-    }
+    // Button link
+    $('[btn-link]').each(function() {
+        $(this).on('click', function() {
+            window.open($(this).attr('btn-link'), '_self');
+        });
+    });
+    // Show password
+    $('.showPsw').each(function(index, input) {
+        $(input).on('click', function() {
+            if ($(input).prev().attr('type') === 'password') {
+                $(input).prev().attr('type', 'text');
+                $(input).removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                $(input).prev().attr('type', 'password');
+                $(input).removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+    });
 });

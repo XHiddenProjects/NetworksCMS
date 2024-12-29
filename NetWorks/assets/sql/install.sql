@@ -64,7 +64,6 @@ CREATE TABLE Config (
     lang VARCHAR(60) NOT NULL DEFAULT 'en-us',
     theme VARCHAR(50) NOT NULL DEFAULT 'default',
     debug TINYINT(1) DEFAULT 1,
-    captcha TINYINT(1) DEFAULT 1,
     editor VARCHAR(50) NOT NULL DEFAULT 'md',
     dFormat VARCHAR(120) NOT NULL DEFAULT 'F d, Y h:ia',
     ico16 VARCHAR(260) DEFAULT '',
@@ -89,6 +88,15 @@ CREATE TABLE Config (
     charset VARCHAR(120) NOT NULL DEFAULT 'UTF-8',
     timezone VARCHAR(150) NOT NULL DEFAULT 'Europe/Berlin',
     secure VARCHAR(10) NOT NULL DEFAULT 'moderate'
+);
+
+CREATE TABLE reCAPTCHA(
+    reCAPTCHA_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    reCAPTCHA_active TINYINT(1) DEFAULT 0,
+    reCAPTCHA_version VARCHAR(2) NOT NULL,
+    reCAPTCHA_type VARCHAR(150) NULL DEFAULT 'checkbox',
+    reCAPTCHA_siteKey VARCHAR(40) NOT NULL,
+    reCAPTCHA_secretKey TEXT NOT NULL
 );
 
 CREATE TABLE Mail (

@@ -1,17 +1,4 @@
 @import url('./reset.css');
-.psw_container{
-    position: relative;
-    padding: 0;
-}
-.psw_container .showPsw{
-    position: absolute;
-    top:50%;
-    right:2%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    cursor: pointer;
-}
-
 .nw_install_form{
     background-color: var(--nw-install-bg);
     width: calc(100% - 20%);
@@ -47,7 +34,6 @@
 .nw_install_form .noshow{
     display: none;
 }
-
 
 [required].err,
 :required.err{

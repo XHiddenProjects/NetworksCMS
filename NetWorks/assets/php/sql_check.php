@@ -50,6 +50,17 @@ if($sql->setCredential($_REQUEST['server'],$_REQUEST['user'],$_REQUEST['psw'])){
             'fa-solid fa-comments',
             (new Web(NW_DRAFTS.NW_DS.'forum.html'))->toAccessable()
         ]);
+        $db->addData('reCAPTCHA',[
+            'reCAPTCHA_active',
+            'reCAPTCHA_version',
+            'reCAPTCHA_siteKey',
+            'reCAPTCHA_secretKey'
+        ],[
+            0,
+            'v2',
+            '',
+            ''
+        ]);
         echo json_encode(['success'=>true],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         $c = fopen(NW_SQL_CREDENTIALS,'w+');
         fwrite($c,json_encode(['server'=>$_REQUEST['server'],'user'=>$_REQUEST['user'],'psw'=>$_REQUEST['psw'],'db'=>$_REQUEST['db']],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));

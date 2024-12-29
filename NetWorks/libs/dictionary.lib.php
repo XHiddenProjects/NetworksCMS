@@ -4,6 +4,7 @@ use networks\libs\Users;
 use networks\libs\Lang;
 use networks\libs\Plugins;
 use networks\libs\Web;
+use networks\libs\HTMLForm;
 use SSQL;
 
 require_once(dirname(__DIR__).'/init.php');
@@ -179,13 +180,192 @@ require_once(dirname(__DIR__).'/init.php');
     },
 )) : '');
 (!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', array(
-    '%URL_PATH=(.*?)%((.|\n)*?)%END%'=>function($e){
+    '%URL_PATH=(.+?)%((.|\n)*?)%END%'=>function($e){
         $url = (new Web())->getPath();
         if($url[0])
             unset($url[0]);
         if(strcmp(strtolower($e[1]),strtolower(implode('/',array_values($url))))==0){
             return $e[2];
         }
+    }
+)) : '');
+(!defined('NW_DICTIONARY_FORMS') ? define('NW_DICTIONARY_FORMS', array(
+    '%FORM(=(.+?))?%((.|\n)*?)%ENDFORM%'=>function($e){
+        $e = array_values(array_filter($e,function($e){return trim($e)!=='';}));
+        $form = (new HTMLForm());
+        foreach(preg_split('/\r\n|\n/',trim(preg_replace('/\t/','',(isset($e[3]) ? $e[3] : $e[1])))) as $elem){
+            foreach(NW_DICTIONARY_FORMS_ELEMENTS as $patt=>$call){
+                if(preg_match('/'.$patt.'/',$elem)){
+                    $elem = trim(preg_replace_callback('/'.$patt.'/',$call,$elem));
+                    $args = explode(';',$elem);
+                    if(count($args)>1){
+                        $setMethod = $args[0];
+                        unset($args[0]);
+                        $args = (new Utils())->extractParam($args);
+                        $form->{$setMethod}(...$args);
+                    }else
+                        $form->{$args[0]}();
+                    break;
+                }
+            }
+        }
+        if(isset($e[3])) $formArgs = explode(';',$e[2]);
+        if(isset($formArgs)){
+            $method='post';
+            $action='';
+            $enctype='';
+            $class='';
+            foreach($formArgs as $fa){
+                $fa = trim(preg_replace('/[\r\n]+/','',$fa));
+                preg_match('/action:(.+);?/',$fa,$matches);
+                if(preg_match('/method:(.+);?/',$fa,$matches)) $method = $matches[1];
+                if(preg_match('/action:(.+);?/',$fa,$matches)) $action = $matches[1];
+                if(preg_match('/enctype:(.+);?/',$fa,$matches)) $enctype = $matches[1];
+                if(preg_match('/class:(.+);?/',$fa,$matches)) $class = $matches[1];
+            }
+            return $form->finalize($method,$action,$enctype,$class);
+        }else
+            return $form->finalize();
+    }
+)) : '');
+(!defined('NW_DICTIONARY_FORMS_ELEMENTS') ? define('NW_DICTIONARY_FORMS_ELEMENTS', array(
+    '%ROW(=class:(.+?))?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/^=/','',$e);
+        },$e);
+        $out='row;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%COL(=class:(.+?))?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/^=/','',$e);
+        },$e);
+        $out='col;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%TITLE=(value:(.+?))%'=>function($e){
+        $out = 'title;';
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/;$/','',$e);
+        },$e);
+        
+        foreach($e as $txt){
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%text=(name:(.+?));?(value:(.*?))?(class:(.*?))?(placeholder:(.*?))?(desc:(.*?))?(required:(true|false))?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/;$/','',$e);
+        },$e);
+        $out='text;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%password=(name:(.+?));?(value:(.*?))?(class:(.*?))?(placeholder:(.*?))?(desc:(.*?))?(required:(true|false))?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/;$/','',$e);
+        },$e);
+        $out='password;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%button=(name:(.+?));?(type:(.*?));?(class:(.*?));?(link:(.*?));?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $out='button;';
+        foreach($e as $txt){
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    },
+    '%color=(name:(.+?));?(value:(.*?))?(class:(.*?))?(placeholder:(.*?))?(desc:(.*?))?(required:(true|false))?%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $e = array_map(function($e){
+            return preg_replace('/;$/','',$e);
+        },$e);
+        $out='color;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
+    }
+    ,
+    '%recaptcha=(value:(.*?))%'=>function($e){
+        $e = array_values(array_filter($e,function($e){
+            return $e!==''&&preg_match('/.*?:.*?/',$e);
+        }));
+        unset($e[0]);
+        $e = array_values($e);
+        $out='reCAPTCHA;';
+        foreach($e as $txt){
+            
+            $s = explode(':',$txt);
+            $out.=$s[0].':'.$s[1].';';
+        }
+        $out=preg_replace('/;$/','',$out);
+        return $out;
     }
 )) : '');
 /**

@@ -24,7 +24,33 @@ body{
     --nw-install-bg: rgb(94, 143, 217,.8);
     --nw-intall-form-title: #5e5959;
     --nw-install-form-subtitle: #2b3a3f;
-
+    /*Authorization*/
+    --nw-auth-bg: rgba(128, 177, 199, 0.85);
+    --nw-auth-color: #444444;
     /*Form*/
     --nw-form-error: #c52121;
+}
+.color-picker-ui{
+    height: auto;
+}
+
+.g-recaptcha{
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 5px;
+    width: 304px;
+}
+/* Password */
+.psw_container{
+    position: relative;
+    padding: 0;
+    width: 100%;
+}
+.psw_container .showPsw{
+    position: absolute;
+    top:50%;
+    right:2%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    cursor: pointer;
 }

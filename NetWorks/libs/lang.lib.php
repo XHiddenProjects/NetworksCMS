@@ -20,10 +20,10 @@
         /**
          * Recieve the value of the language.
          *
-         * @param mixed ...$lookup Subject to look for in array
+         * @param string|array ...$lookup Subject to look for in array
          * @return mixed Returns the value of the type, otherwise False.
          */
-        public function get(string ...$lookup) : mixed{
+        public function get(string|array ...$lookup) : mixed{
             $lastLook = null;
             foreach($lookup as $look){
                 if(isset($this->langObj[$look])||isset($lastLook[$look])){

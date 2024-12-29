@@ -13,7 +13,7 @@
         "passwordRequirements": "Your password must be 1 Upper/Lowercase, 1 Number, 1 special character, and 8-64 long",
         "passwordMatch": "Password don't match",
         "userAdd": "Cannot add user",
-        "usernameExists": "Username already exists",
+        "usernameOrEmailExists": "Username/Email already exists",
         "MinMaxError":"Minimum must be less than the maximum!",
         "RangeError": "The number is out of range"
     },
@@ -32,7 +32,8 @@
         "name": "Name",
         "psw": "Password",
         "cpsw": "Confirm Password",
-        "email": "Email"
+        "email": "Email",
+        "usernameEmail": "Username/Email"
     },
     "SQL":{
         "sql":"SQL",
@@ -54,6 +55,11 @@
         "create": "Register Account",
         "login": "Login",
         "signup": "Sign Up"
+    },
+    "Buttons":{
+        "signup":"Sign Up",
+        "login":"Login",
+        "back": "Back"
     },
     "Dashboard":{
         "title":"Dashboard"
