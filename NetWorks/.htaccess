@@ -107,11 +107,11 @@ RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php
 
 # Errors
-ErrorDocument 400 /NetWorks/errors/400.php
-ErrorDocument 401 /NetWorks/errors/401.php
-ErrorDocument 403 /NetWorks/errors/403.php
-ErrorDocument 404 /NetWorks/errors/404.php
-ErrorDocument 500 /NetWorks/errors/500.php
+ErrorDocument 400 //NetWorks/errors/400.php
+ErrorDocument 401 //NetWorks/errors/401.php
+ErrorDocument 403 //NetWorks/errors/403.php
+ErrorDocument 404 //NetWorks/errors/404.php
+ErrorDocument 500 //NetWorks/errors/500.php
 
 # Redirects
 RewriteRule ^auth/(.*)$ auth.php/$1 [L]
