@@ -27,10 +27,10 @@ $(document).ready(function() {
                             db: $(this).find('#sqldb').val()
                         },
                         success: function(d) {
-                            const e = JSON.parse(d);
-                            if (e['err']) {
+                            console.log(d);
+                            if (d['err']) {
                                 $(this).find('.errmsg').parent().removeClass('d-none');
-                                $(this).find('.errmsg').text(e['err']);
+                                $(this).find('.errmsg').text(d['err']);
                             } else {
                                 $(this).find('.errmsg').parent().addClass('d-none');
                                 $(this).parent().addClass('noshow');
@@ -57,10 +57,9 @@ $(document).ready(function() {
                             perm: 'admin'
                         },
                         success: function(d) {
-                            const e = JSON.parse(d);
-                            if (e['err']) {
+                            if (d['err']) {
                                 $(this).find('.errmsg').parent().removeClass('d-none');
-                                $(this).find('.errmsg').text(e['err']);
+                                $(this).find('.errmsg').text(d['err']);
                             } else {
                                 window.open('./', '_self');
                             }

@@ -18,8 +18,8 @@ class Core extends Plugins{
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/XHiddenProjects/WebAnimate@0.0.6/assets/webanimate.min.css"/>
             <link rel="stylesheet" href="https://unpkg.com/alwan/dist/css/alwan.min.css">';
             foreach(array_diff(scandir(NW_THEMES.NW_DS.$this->theme.NW_DS.'css'),['.','..']) as $file){
-                $sfile = preg_replace('/\.(.*?)$/','',$file);
-                $p = (new Web())->getPath()[1];
+                $sfile = preg_replace('/\.(.*?)$/', '',$file);
+                $p = isset((new Web())->getPath()[1]) ? (new Web())->getPath()[1] : (new Web())->getPath()[0];
                 if($p==='NetWorks') $p = 'home';
                 if((($sfile===$p)||$sfile==='mobile')&&$sfile!=='reset'){
                     $out.='<link rel="stylesheet" href="'.(new Web(NW_THEMES.NW_DS.$this->theme.NW_DS.'css'.NW_DS.$file))->toAccessable().'"/>';

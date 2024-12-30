@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+header(header: 'Content-Type: application/json; charset=utf-8');
 use networks\libs\Lang;
 use networks\libs\Web;
 require_once(dirname(__DIR__,2).'/libs/ssql.lib.php');

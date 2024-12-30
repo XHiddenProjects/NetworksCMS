@@ -76,9 +76,15 @@ class Web{
     public function getPass():string|null{
         return parse_url($this->url,PHP_URL_PASS);
     }
-
+    /**
+     * Returns the accessable URL
+     *
+     * @return string|null
+     */
     public function toAccessable():string|null{
-        return trim(filter_var(str_replace(dirname(__DIR__,2).'\\',(empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/",$this->url), FILTER_SANITIZE_URL),'/');
+        $replace = str_replace(search: dirname(path: __DIR__, levels: 2) . '\\', replace: (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/", subject: $this->url);
+        $replace = str_replace(search: dirname(path: __DIR__, levels: 2) . '/', replace: (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/", subject: $this->url);
+        return trim(string: filter_var(value: $replace, filter: FILTER_SANITIZE_URL), characters: '/');
     }
 
 }

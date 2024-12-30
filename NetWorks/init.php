@@ -70,7 +70,9 @@ if(preg_replace('/\\\\/','/',dirname(__FILE__))!==$_SERVER['DOCUMENT_ROOT']){
 }else{
     preg_match_all('/\/\/(.*?)\/errors\/[\d]{3}/',$access,$matches);
     foreach($matches[0] as $match){
-        $access = '//'.str_replace($match,preg_match('/\/errors\/([\d]{3})/',$match)[0],$access);
+        if (preg_match('/\/errors\/([\d]{3})/', $match, $errorMatch)) {
+            $access = '//'.str_replace($match, $errorMatch[0], $access);
+        }
     }
     file_put_contents(dirname(__FILE__).'/.htaccess',$access);
 }

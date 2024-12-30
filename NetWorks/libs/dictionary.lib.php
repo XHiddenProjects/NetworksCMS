@@ -13,8 +13,8 @@ require_once(dirname(__DIR__).'/init.php');
     '%USER_DATETIME%'=>function(){return date('Y-m-d H:i:s');},
     '%USER_DATE%'=>function(){return date('Y-m-d');},
     '%USER_TIME%'=>function(){return date('H:i:s');},
-    '%USER_IP%'=>function(){return (new Users())->IP()['ip'];},
-    '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()['visibility'];},
+    '%USER_IP%'=>function(){return (new Users())->IP()->ip;},
+    '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()->visibility;},
     '%USER_IS_ONLINE%((.|\n)*?)%END%'=>function($e){if(isset($_COOKIE['user'])) return $e[1];},
     '%USER_IS_OFFLINE%((.|\n)*?)%END%'=>function($e){if(!isset($_COOKIE['user'])) return $e[1];}
 )) : '');
@@ -81,23 +81,25 @@ require_once(dirname(__DIR__).'/init.php');
         return $footerjs;
     }
 )) : '');
-(!defined('NW_DICTIONARY_LANG') ? define('NW_DICTIONARY_LANG', array(
+(!defined('NW_DICTIONARY_LANG') ? define('NW_DICTIONARY_LANG', [
     '%LANG=(.+?)%'=>function($e){$s = explode(',',$e[1]); return (new Lang())->get($s[0],$s[1]);},
     '%PATH=(.+?)%'=>function($e){return (new Web(constant($e[1])))->toAccessable();}
-)) : '');
-(!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', array(
+]) : '');
+(!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', [
     '%LISTPAGES%'=>function(){
         $out='';
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            foreach($db->selectData('pages',['*']) as $page){
-                if(is_file(NW_ROOT.NW_DS.$page['pageName'].'.php')){
-                    $out.='<li class="nav-item d-flex align-items-center px-2">
-                        <i class="'.$page['pageIcon'].'"></i>
-                        <a class="nav-link '.(isset((new Web())->getPath()[1]) ? (strtolower($page['pageName'])===strtolower((new Web())->getPath()[count((new Web())->getPath()) - 1]) ? 'active' : '') : (strtolower($page['pageName'])==='home.php' ? 'active' : '')).'" aria-current="page" href="'.($page['pageName']==='home' ? './' : $page['pageName']).'">'.ucfirst($page['pageName']).'</a>
-                    </li>';
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                foreach($db->selectData('pages',['*']) as $page){
+                    if(is_file(NW_ROOT.NW_DS.$page['pageName'].'.php')){
+                        $out.='<li class="nav-item d-flex align-items-center px-2">
+                            <i class="'.$page['pageIcon'].'"></i>
+                            <a class="nav-link '.(isset((new Web())->getPath()[1]) ? (strtolower($page['pageName'])===strtolower((new Web())->getPath()[count((new Web())->getPath()) - 1]) ? 'active' : '') : (strtolower($page['pageName'])==='home.php' ? 'active' : '')).'" aria-current="page" href="'.($page['pageName']==='home' ? './' : $page['pageName']).'">'.ucfirst($page['pageName']).'</a>
+                        </li>';
+                    }
                 }
             }
         }
@@ -106,47 +108,45 @@ require_once(dirname(__DIR__).'/init.php');
     '%DOCERROR%'=>function(){
         return http_response_code();
     }
-)) : '');
-(!defined('NW_DICTIONARY_CONFIG') ? define('NW_DICTIONARY_CONFIG',array(
+]) : '');
+(!defined('NW_DICTIONARY_CONFIG') ? define('NW_DICTIONARY_CONFIG',[
     '%WEBTITLE%'=>function(){
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            $data = $db->selectData('config',['title'])[0]['title'];
-            $sql->close();
-            return $data;
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('config',['title'])[0]['title'];
+                $sql->close();
+                return $data;
+            }
+        }else{
+            return 'NetWorks';
         }
     },
     '%CONFIGLANG%'=>function(){
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            $data = $db->selectData('config',['lang'])[0]['lang'];
-            $sql->close();
-            return explode('-',$data)[0];
-        }
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('config',['lang'])[0]['lang'];
+                $sql->close();
+                return explode('-',$data)[0];
+            }
+        }else return 'en';
     },
     '%DEBUG%'=>function(){
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            $data = $db->selectData('config',['debug'])[0]['debug'];
-            $sql->close();
-            return $data;
-        }
-    },
-    '%DATEFORMAT%'=>function(){
-        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
-        $sql = new SSQL();
-        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
-            $db = $sql->selectDB($cred['db']);
-            $data = $db->selectData('config',['dFormat'])[0]['dFormat'];
-            $sql->close();
-            return $data;
-        }
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('config',['debug'])[0]['debug'];
+                $sql->close();
+                return $data;
+            }
+        }else return false;
     },
     '%DATEFORMAT%'=>function(){
         $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
@@ -178,8 +178,8 @@ require_once(dirname(__DIR__).'/init.php');
             return $data;
         }
     },
-)) : '');
-(!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', array(
+]) : '');
+(!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', [
     '%URL_PATH=(.+?)%((.|\n)*?)%END%'=>function($e){
         $url = (new Web())->getPath();
         if($url[0])
@@ -188,8 +188,8 @@ require_once(dirname(__DIR__).'/init.php');
             return $e[2];
         }
     }
-)) : '');
-(!defined('NW_DICTIONARY_FORMS') ? define('NW_DICTIONARY_FORMS', array(
+]) : '');
+(!defined('NW_DICTIONARY_FORMS') ? define('NW_DICTIONARY_FORMS', [
     '%FORM(=(.+?))?%((.|\n)*?)%ENDFORM%'=>function($e){
         $e = array_values(array_filter($e,function($e){return trim($e)!=='';}));
         $form = (new HTMLForm());
@@ -227,8 +227,8 @@ require_once(dirname(__DIR__).'/init.php');
         }else
             return $form->finalize();
     }
-)) : '');
-(!defined('NW_DICTIONARY_FORMS_ELEMENTS') ? define('NW_DICTIONARY_FORMS_ELEMENTS', array(
+]) : '');
+(!defined('NW_DICTIONARY_FORMS_ELEMENTS') ? define('NW_DICTIONARY_FORMS_ELEMENTS', [
     '%ROW(=class:(.+?))?%'=>function($e){
         $e = array_values(array_filter($e,function($e){
             return $e!==''&&preg_match('/.*?:.*?/',$e);
@@ -367,7 +367,7 @@ require_once(dirname(__DIR__).'/init.php');
         $out=preg_replace('/;$/','',$out);
         return $out;
     }
-)) : '');
+]) : '');
 /**
  * A variable dictionary for templates
  * @author XHiddenProjects <xhiddenprojects@gmail.com>
@@ -376,7 +376,7 @@ require_once(dirname(__DIR__).'/init.php');
  * @link https://github.com/XHiddenProjects
  */
 class Dictionary{
-    protected $ui = array();
+    protected $ui = [];
     /**
      * Creates a variable dictionary
      */
@@ -386,11 +386,11 @@ class Dictionary{
     /**
      * Adds an item to Dictionary
      *
-     * @param String $search Search for a target query. Ex: **%USERNAME%**
-     * @param Callable $replace [Optional] - Replace the search with a value. Ex: **JohnDoe**
+     * @param string $search Search for a target query. Ex: **%USERNAME%**
+     * @param callable $replace [Optional] - Replace the search with a value. Ex: **JohnDoe**
      * @return Dictionary
      */
-    public function addItem(String $search, callable $replace) : Dictionary{
+    public function addItem(string $search, callable $replace) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
         if(!in_array($search,$this->ui))
             array_push($this->ui,['/'.$search.'/'=>$replace]);
@@ -399,12 +399,12 @@ class Dictionary{
     /**
      * Drop and item from the dictionary
      *
-     * @param String $search Search query to drop. Ex: **%USERNAME%**
+     * @param string $search Search query to drop. Ex: **%USERNAME%**
      * @return Dictionary
      */
-    public function dropItem(String $search) : Dictionary{
+    public function dropItem(string $search) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
-        if(in_array($search,$this->ui)) unset($this->ui['/'.$search.'/']);
+        if(in_array($search,$this->ui)) unset($this->ui["/$search/"]);
         return $this;
     }
     /**
@@ -430,7 +430,7 @@ class Dictionary{
     /**
      * List everything in the dictionary
      *
-     * @return Array{Search: String}
+     * @return array{Search: string}
      */
     public function listItem() : array{
         return $this->sanitize();
@@ -438,12 +438,12 @@ class Dictionary{
     /**
      * Replace an item in the array
      *
-     * @param String $search Search to look for. Ex: **%USERNAME%**
-     * @param String $newSearch Search to replace with. Ex: **%NAME%**
-     * @param Callable|null $replace [Optional] - Replace the value, leave _null_ to set as default replace
+     * @param string $search Search to look for. Ex: **%USERNAME%**
+     * @param string $newSearch Search to replace with. Ex: **%NAME%**
+     * @param callable|null $replace [Optional] - Replace the value, leave _null_ to set as default replace
      * @return Dictionary
      */
-    public function replaceItem(String $search, String $newSearch, callable|null $replace=null) : Dictionary{
+    public function replaceItem(string $search, string $newSearch, callable|null $replace=null) : Dictionary{
         $search = preg_replace('/^\/|\/$/','',$search);
         $newSearch = preg_replace('/^\/|\/$/','',$newSearch);
         if(in_array($search,$this->ui)){
@@ -455,7 +455,7 @@ class Dictionary{
     /**
      * Merages multiple dictionaries
      *
-     * @param Array<String> ...$dict Dictionary to convert into constants
+     * @param array<string> ...$dict Dictionary to convert into constants
      * @return array Merged dictionaries
      */
     public function merge(...$dict) : array {
@@ -464,7 +464,7 @@ class Dictionary{
     /**
      * Undocumented function
      *
-     * @param Array<String> ...$dict Dictionary to convert into constants
+     * @param array<string> ...$dict Dictionary to convert into constants
      * @return void
      */
     public function toConst(...$dict):void{

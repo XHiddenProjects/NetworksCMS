@@ -1,7 +1,7 @@
 <?php
 use networks\libs\Dictionary;
 use networks\libs\Templates;
-require_once('init.php');
+require_once 'init.php';
 
 if(!file_exists(NW_SQL_CREDENTIALS))
     echo '<script>window.open("./install","_self")</script>';
