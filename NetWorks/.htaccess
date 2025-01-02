@@ -3,7 +3,7 @@ RewriteEngine On
 
 
 # Caching schema
-<FilesMatch "\.(jpg|png|html|css|js|gif)$">
+<FilesMatch "\.(jpg|png|html|css|js|gif|json)$">
 Header set Cache-Control "public, max-age=0"
 </FilesMatch>
 
@@ -115,3 +115,4 @@ ErrorDocument 500 //NetWorks/errors/500.php
 
 # Redirects
 RewriteRule ^auth/(.*)$ auth.php/$1 [L]
+RewriteRule ^dashboard/(.*)$ dashboard.php/$1 [L]

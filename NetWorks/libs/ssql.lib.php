@@ -81,7 +81,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 	}
 	public function makeDB(string $dbname) : bool{
@@ -91,7 +90,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}	
 	}
 	public function resetDB(string $dbname) : bool{
@@ -134,7 +132,6 @@ class SSQL{
 	public function makeTable(string $tbname, array $items, array $types ,array $values, array $options) : bool{
 		if(count($items)!=count($types)||count($items)!=count($values)||count($items)!=count($options)){
 			die('All array must match up with items amout(Physical Count: '.count($items).'/Array Count:'.(count($items)-1).')');
-			return false;
 		}else{
 			$sql = 'CREATE TABLE '.strtolower($tbname). '(';
 		for($i=0;$i<count($items);$i++){
@@ -146,7 +143,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 		}
 	}
@@ -156,7 +152,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}	
 	}
 	public function listTables() : array{
@@ -168,7 +163,7 @@ class SSQL{
 					$row[] = $rows;
 				}
 		}else{
-			return false;
+			return [];
 		}
 		return $row;
 	}
@@ -188,7 +183,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 	}
 	public function selectData(string $tbname, array $sel, string $condition='', array $args=[], bool $returnArr=true) : array|string{
@@ -210,7 +204,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 	}
 	public function updateData(string $tbname, string $replacement, string $condition='') : bool{
@@ -219,7 +212,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 	}
 	# permissions
@@ -229,7 +221,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-			return false;
 		}
 	}
 	public function dropPerm(array $perm,string $tbname, array $username) : bool{
@@ -238,7 +229,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}	
 	}
 	# accounts
@@ -248,7 +238,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}
 	}
 	public function dropUser(string $username){
@@ -257,15 +246,14 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}
 	}
 	# views
 	public function makeView(string $viewName, array $data, string $selector) : string{
 		$sql = 'CREATE OR REPLACE VIEW '.strtolower($viewName).' AS '.$selector;
 		if($this->conn->query($sql)){
-			$out='<table class="ssql-table '.$this->dm.'">
-			<tbody>';
+			$out="<table class=\"ssql-table {$this->dm}\">
+			<tbody>";
 			$getView = $selector;
 			$r = $this->conn->query($getView);
 			$out.='<tr>';
@@ -285,7 +273,6 @@ class SSQL{
 			return $out;
 		}else{
 			die('Error: '.$this->conn->error);
-				return '';
 		}
 	}
 	public function dropView(string $viewName) : bool{
@@ -294,7 +281,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}
 	}
 	#indexs
@@ -304,7 +290,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}
 	}
 	public function dropIndex(string $tbname, string $idx_name) : bool{
@@ -313,7 +298,6 @@ class SSQL{
 			return true;
 		}else{
 			die('Error: '.$this->conn->error);
-				return false;
 		}
 	}
 	# functions/operators
@@ -367,22 +351,22 @@ class SSQL{
 		return implode(' OR ',$content);
 	}
 	public function not(string $content) : string{
-		return 'NOT '.$content;
+		return "NOT $content";
 	}
 	public function exists(string $selector) : string{
-		return 'EXISTS ('.$selector.')';
+		return "EXISTS ($selector)";
 	}
 	public function all(string $selector) : string{
-		return 'ALL ('.$selector.')';
+		return "ALL ($selector)";
 	}
 	public function any(string $selector) : string{
-		return 'ANY ('.$selector.')';
+		return "ANY ($selector)";
 	}
 	public function comment(string $str, bool $block=false) : string{
-		return ($block ? '/*'.$str.'*/' : '--'.$str);
+		return $block ? "/*$str*/" : "-- $str";
 	}
 	public function between(string $com1, string $com2) : string{
-		return 'BETWEEN '.$com1.' AND '.$com2;
+		return "BETWEEN $com1 AND $com2";
 	}
 	public function ifNull($exp, $alt) : string{
 		return 'IFNULL('.$exp.', '.$this->isNoQuote($alt).')';
@@ -404,7 +388,5 @@ class SSQL{
 	public function fullJoin(string $table1, string $table2, string $col1, string $col2, bool $outer=false) : string{
 		return 'FULL '.($outer ? 'OUTER ' : '').'JOIN '.strtolower($table2).' ON '.strtolower($table1).'.'.$col1.' = '.strtolower($table2).'.'.$col2;
 	}
-	
-
 }
 ?>

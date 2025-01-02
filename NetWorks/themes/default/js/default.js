@@ -90,4 +90,30 @@ $(document).ready(function() {
             }
         });
     });
+
+    // logout
+    $('#nwlogout').on('click', function() {
+        $.ajax({
+            url: `./assets/php/user.php`,
+            data: {
+                action: 'logout'
+            },
+            success: function() {
+                window.open('./', '_self');
+            },
+            error: function(e, c) {
+                console.log(`${e}: ${c}`);
+            }
+        });
+    });
+
+    //dropdown hover
+    $('li.dropdown').hover(function() {
+        $(this).find('.dropdown-toggle').dropdown('show');
+    }, function() {
+        setTimeout(()=>{
+            $(this).find('.dropdown-toggle').dropdown('hide');
+        },100);
+    });
+
 });

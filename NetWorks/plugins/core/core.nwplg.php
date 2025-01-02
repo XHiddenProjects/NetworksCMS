@@ -19,7 +19,7 @@ class Core extends Plugins{
             <link rel="stylesheet" href="https://unpkg.com/alwan/dist/css/alwan.min.css">';
             foreach(array_diff(scandir(NW_THEMES.NW_DS.$this->theme.NW_DS.'css'),['.','..']) as $file){
                 $sfile = preg_replace('/\.(.*?)$/', '',$file);
-                $p = isset((new Web())->getPath()[1]) ? (new Web())->getPath()[1] : (new Web())->getPath()[0];
+                $p = (new Web())->getPath()[1] ?? (new Web())->getPath()[0];
                 if($p==='NetWorks') $p = 'home';
                 if((($sfile===$p)||$sfile==='mobile')&&$sfile!=='reset'){
                     $out.='<link rel="stylesheet" href="'.(new Web(NW_THEMES.NW_DS.$this->theme.NW_DS.'css'.NW_DS.$file))->toAccessable().'"/>';
@@ -46,7 +46,9 @@ class Core extends Plugins{
         if($this->isActive())
             $out = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/gh/XHiddenProjects/WebAnimate@0.0.6/assets/webanimate.min.js"></script>
-        <script src="https://unpkg.com/alwan/dist/js/alwan.min.js"></script>';
+        <script src="https://unpkg.com/alwan/dist/js/alwan.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src=""></script>';
 
         if(file_exists(NW_SQL_CREDENTIALS)){
             $sql = new SSQL();

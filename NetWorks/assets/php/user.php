@@ -3,7 +3,7 @@ header('Content-Type: application/json; charset=utf-8');
 use networks\libs\Lang;
 use networks\libs\Users;
 
-require_once(dirname(__DIR__,2).'/init.php');
+require_once dirname(__DIR__,2).'/init.php';
 
 $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
 
@@ -28,15 +28,39 @@ if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                     echo json_encode(['err'=>(new Lang())->get('Errors','usernameOrEmailExists')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
                 $sql->close();
             }
-            else if(strtolower($_REQUEST['action'])==='get'){
+            elseif(strtolower($_REQUEST['action'])==='get'){
                 switch(strtolower($_REQUEST['type'])){
                     case 'ip':
                         echo json_encode(['success'=>$user->IP()['ip']],JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
                     break;
                 }
             }
-            else if(strtolower($_REQUEST['action'])==='login'){
-                
+            elseif(strtolower($_REQUEST['action'])==='login'){
+                $db = $sql->selectDB($cred['db']);
+                $userData = $db->selectData('users',['*'],'WHERE username="'.htmlentities($_REQUEST['username']).'" OR email="'.filter_var(htmlentities($_REQUEST['username']),FILTER_VALIDATE_EMAIL).'"');
+                if(!empty($userData)){
+                    if(password_verify($_REQUEST['psw'],$userData[0]['pass'])){
+                        if(!isset($_COOKIE['user'])){
+                            setcookie('user',$userData[0]['username'],time() + (86400 * 30),'/');
+                            echo json_encode(['success'=>1],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                        }else echo json_encode(['success'=>1],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                    }else echo json_encode(['err'=>(new Lang())->get('Errors','invalidPsw')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                }else echo json_encode(['err'=>(new Lang())->get('Errors','noUsernameOrEmailExists')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            }elseif(strtolower($_REQUEST['action'])==='logout'){
+                if(isset($_COOKIE['user'])){
+                    setcookie('user','',time()-3600,'/');
+                    echo json_encode(['success'=>1],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                }
+            }elseif(strtolower($_REQUEST['action'])==='online'){
+                $db = $sql->selectDB($cred['db']);
+                if(isset($_COOKIE['user'])){
+                    if($db->updateData('users','OnlineStat="'.date('Y-m-d H:i:s').'"','username="'.$_COOKIE['user'].'"'))
+                        echo json_encode(['success'=>1],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                }
+            }elseif(strtolower($_REQUEST['action'])==='count'){
+                $db = $sql->selectDB($cred['db']);
+                $count = $db->selectData('users',['accCreated'],'WHERE YEAR(accCreated) BETWEEN '.$_REQUEST['startYear'].' AND '.$_REQUEST['endYear']);
+                echo json_encode(['success'=>($count ?? [])],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
             }
         }
     }else echo json_encode(['err'=>(new Lang())->get('Errors','noSQLDB')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);

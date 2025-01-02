@@ -34,15 +34,15 @@
                         %recaptcha=value:submit%
                 %ROW%
                     %COL=class:text-end%
-                        %button=name:signup;type:submit;class:btn-success mt-2 w-75 fs-4;link:%
+                        %button=name:signup;type:submit;class:btn-success mt-2 w-100 fs-4;link:;%
                     %COL=class:text-center%
-                        %button=name:login;type:button;class:btn-dark mt-2 w-75 fs-4;link:./login%
+                        %button=name:login;type:button;class:btn-dark mt-2 w-100 fs-4;link:./login;%
                     %COL%
-                        %button=name:back;type:button;class:btn-warning mt-2 w-75 fs-4;link:./%
+                        %button=name:back;type:button;class:btn-warning mt-2 w-100 fs-4;link:./;%
             %ENDFORM%
         %END%
         %URL_PATH=auth/login%
-            %FORM=class:nw_signup nw_auth_form%
+            %FORM=class:nw_login nw_auth_form%
                 %ROW%
                     %COL%
                         %TITLE=value:Account,login%
@@ -52,6 +52,13 @@
                 %ROW%
                     %COL%
                         %password=name:psw;required:true%
+                %ROW%
+                    %COL%
+                        %button=name:login;type:submit;class:btn-success mt-2 w-100 fs-4;link:;%
+                    %COL%
+                        %button=name:signup;type:button;class:btn-dark mt-2 w-100 fs-4;link:./signup;%
+                    %COL%
+                        %button=name:back;type:button;class:btn-warning mt-2 w-100 fs-4;link:./;%
             %ENDFORM%
         %END%
         %FOOTERJS%

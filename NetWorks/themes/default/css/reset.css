@@ -29,6 +29,8 @@ body{
     --nw-auth-color: #444444;
     /*Form*/
     --nw-form-error: #c52121;
+    /*Dashboard*/
+    --nw-dashboard-dropdown-bg: #c4c4c4;
 }
 .color-picker-ui{
     height: auto;

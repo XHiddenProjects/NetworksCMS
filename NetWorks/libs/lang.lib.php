@@ -6,8 +6,8 @@
         /**
          * Recieves language folder based on language and country
          *
-         * @param String $lang Language to use, **en**
-         * @param String $country Country to the language, **us**
+         * @param string $lang Language to use, **en**
+         * @param string $country Country to the language, **us**
          */
         public function __construct(String $lang='en', String $country='us') {
             $this->langObj = json_decode(file_get_contents(dirname(__DIR__).'/languages/'.strtolower($lang.'-'.$country).'.json'),true);
@@ -24,14 +24,11 @@
          * @return mixed Returns the value of the type, otherwise False.
          */
         public function get(string|array ...$lookup) : mixed{
+            if(is_array($lookup[0])) $lookup = array_merge(...$lookup);
             $lastLook = null;
             foreach($lookup as $look){
-                if(isset($this->langObj[$look])||isset($lastLook[$look])){
-                    if(!$lastLook)
-                        $lastLook = $this->langObj[$look];
-                    else
-                        $lastLook = $lastLook[$look];
-                }else return false;
+                if(isset($this->langObj[$look])||isset($lastLook[$look])) $lastLook = !$lastLook ? $this->langObj[$look] : $lastLook[$look];
+                else return false;
             }
             return $lastLook;
         }

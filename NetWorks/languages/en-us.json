@@ -14,6 +14,9 @@
         "passwordMatch": "Password don't match",
         "userAdd": "Cannot add user",
         "usernameOrEmailExists": "Username/Email already exists",
+        "noUsernameOrEmailExists": "Username/Email doesn`t exists",
+        "noUsername": "No Username exists",
+        "invalidPsw": "Invalid password",
         "MinMaxError":"Minimum must be less than the maximum!",
         "RangeError": "The number is out of range"
     },
@@ -54,14 +57,55 @@
     "Account":{
         "create": "Register Account",
         "login": "Login",
-        "signup": "Sign Up"
+        "signup": "Sign Up",
+        "logout": "Logout"
     },
     "Buttons":{
         "signup":"Sign Up",
         "login":"Login",
-        "back": "Back"
+        "back": "Back",
+        "logout": "Logout",
+        "submit": "Submit"
     },
     "Dashboard":{
-        "title":"Dashboard"
+        "title":"Dashboard",
+        "config":{
+            "title":"Configuration"
+        },
+        "profile":{
+            "title":"Profile"
+        }
+    },
+    "mail":{
+        "verify":{
+            "subject":"Verify your email",
+            "body":"Please verify your email by clicking the link below",
+            "label": "Verify"
+        }
+    },
+    "charts":{
+        "userGraph": {
+            "title": "# of users",
+            "label": "Users"
+        }
+    },
+    "dateTimes":{
+        "day":"Day",
+        "month":"Month",
+        "year":"Year",
+        "months": {
+            "jan": "January",
+            "feb": "February",
+            "mar": "March",
+            "apr": "April",
+            "may": "May",
+            "jun": "June",
+            "jul": "July",
+            "aug": "August",
+            "sep": "September",
+            "oct": "October",
+            "nov": "November",
+            "dec": "December"
+        }
     }
 }

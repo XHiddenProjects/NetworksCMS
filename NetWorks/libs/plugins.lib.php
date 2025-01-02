@@ -19,7 +19,7 @@ class Plugins{
     /**
      * Create a plugin class
      *
-     * @param String|null $pname Plugins name
+     * @param string|null $pname Plugins name
      */
     public function __construct(String|null $pname=null) {
         $this->plugin = $pname;
@@ -36,10 +36,10 @@ class Plugins{
     /**
      * Set a target to trigger the function
      *
-     * @param String $target Result placement
-     * @return Plugins|False
+     * @param string $target Result placement
+     * @return Plugins|false
      */
-    public function setPlacement(String $target):Plugins|False{
+    public function setPlacement(String $target):Plugins|false{
         if($this->isInit){
             $this->placement = $target;
             return $this;
@@ -49,9 +49,9 @@ class Plugins{
      * Give arguments to your method
      *
      * @param mixed ...$args Arguments
-     * @return Plugins|False
+     * @return Plugins|false
      */
-    public function setArgs(...$args):Plugins|False{
+    public function setArgs(...$args):Plugins|false{
         if($this->isInit&&$this->placement){
             $this->args = $args;
             return $this;
@@ -100,8 +100,8 @@ class Plugins{
                 throw new PluginHandlingException('has not been initiated correctly.',$this->plugin);
         }catch(PluginHandlingException $e){
             echo '<b>NetWorks Plugin_Handler:</b> '.$e->getPluginStats().' '.$e->getMessage().' on line '.$e->getLine();
+            return null;
         }
-        
     }
 }
 ?>

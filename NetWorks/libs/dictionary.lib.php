@@ -16,7 +16,8 @@ require_once(dirname(__DIR__).'/init.php');
     '%USER_IP%'=>function(){return (new Users())->IP()->ip;},
     '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()->visibility;},
     '%USER_IS_ONLINE%((.|\n)*?)%END%'=>function($e){if(isset($_COOKIE['user'])) return $e[1];},
-    '%USER_IS_OFFLINE%((.|\n)*?)%END%'=>function($e){if(!isset($_COOKIE['user'])) return $e[1];}
+    '%USER_IS_OFFLINE%((.|\n)*?)%END%'=>function($e){if(!isset($_COOKIE['user'])) return $e[1];},
+    '%USERNAME%'=>function(){return $_COOKIE['user'];}
 )) : '');
 (!defined('NW_DICTIONARY_META') ? define('NW_DICTIONARY_META',array(
     '%META_CHARSET=(.+?)%'=>function($e){return '<meta charset="'.$e[1].'"/>';},
@@ -82,7 +83,7 @@ require_once(dirname(__DIR__).'/init.php');
     }
 )) : '');
 (!defined('NW_DICTIONARY_LANG') ? define('NW_DICTIONARY_LANG', [
-    '%LANG=(.+?)%'=>function($e){$s = explode(',',$e[1]); return (new Lang())->get($s[0],$s[1]);},
+    '%LANG=(.+?)%'=>function($e){$s = explode(',',$e[1]); return (new Lang())->get($s);},
     '%PATH=(.+?)%'=>function($e){return (new Web(constant($e[1])))->toAccessable();}
 ]) : '');
 (!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', [
@@ -180,10 +181,50 @@ require_once(dirname(__DIR__).'/init.php');
     },
 ]) : '');
 (!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', [
+    '%FILE_EXISTS=(.+?)%((.|\n)*?)%END%(%ELSE%((.|\n)*?)%END%)?'=>function($e){
+        if(file_exists($e[1])) return $e[2];
+        elseif(isset($e[5])) return $e[5];
+    },
+    '%IS_ADMIN%((.|\n)*?)%END%'=>function($e){
+        if(isset($_COOKIE['user'])){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('users',['*'],'WHERE username="'.$_COOKIE['user'].'"');
+                $sql->close();
+                if(strtolower($data[0]['permission'])==='admin') return $e[1];
+            }
+        }
+    },
+    '%IS_MEMBER%((.|\n)*?)%END%'=>function($e){
+        if(isset($_COOKIE['user'])){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('users',['*'],'WHERE username="'.$_COOKIE['user'].'"');
+                $sql->close();
+                if(strtolower($data[0]['permission'])==='member') return $e[1];
+            }
+        }
+    },
+    '%IS_GUEST%((.|\n)*?)%END%'=>function($e){
+        if(isset($_COOKIE['user'])){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $data = $db->selectData('users',['*'],'WHERE username="'.$_COOKIE['user'].'"');
+                $sql->close();
+                if(strtolower($data[0]['permission'])==='guest') return $e[1];
+            }
+        }
+    },
+    //Make this last
     '%URL_PATH=(.+?)%((.|\n)*?)%END%'=>function($e){
         $url = (new Web())->getPath();
-        if($url[0])
-            unset($url[0]);
+        if($url[0]) unset($url[0]);
         if(strcmp(strtolower($e[1]),strtolower(implode('/',array_values($url))))==0){
             return $e[2];
         }

@@ -54,10 +54,11 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 $currPath = array_values(array_filter(explode('/',$_SERVER['REQUEST_URI']),function($e){
     return $e!=='';
 }));
+
 if(preg_replace('/\\\\/','/',dirname(__FILE__))!==$_SERVER['DOCUMENT_ROOT']){
     preg_match_all('/\/\/((.*?)\/)?errors\/[\d]{3}/',$access,$matches);
     foreach($matches[0] as $match){
-        if(!preg_match('/\/\/'.$currPath[0].'/',$access)){
+        if(!preg_match("/\/\/{$currPath[0]}/",$access)){
             if(!preg_match('/\/\/errors/',$match)){
                 $match = preg_replace_callback('/\/\/(.*?)\/errors/',function(){
                     return '//errors';
@@ -76,4 +77,38 @@ if(preg_replace('/\\\\/','/',dirname(__FILE__))!==$_SERVER['DOCUMENT_ROOT']){
     }
     file_put_contents(dirname(__FILE__).'/.htaccess',$access);
 }
+
+# Update nginx.conf
+$access = file_get_contents(dirname(__FILE__).'/nginx.conf');
+$root = $_SERVER['DOCUMENT_ROOT'];
+$currPath = array_values(array_filter(explode('/',$_SERVER['REQUEST_URI']),function($e){
+    return $e!=='';
+}));
+
+if(preg_replace('/\\\\/','/',dirname(__FILE__))!==$_SERVER['DOCUMENT_ROOT']){
+    preg_match_all('/\/\/((.*?)\/)?errors\/[\d]{3}/',$access,$matches);
+    foreach($matches[0] as $match){
+        if(!preg_match("/\/\/{$currPath[0]}/",$access)){
+            
+            if(!preg_match('/\/\/errors/',$match)){
+                $match = preg_replace_callback('/\/\/(.*?)\/errors/',function(){
+                    return '//errors';
+                },$match);
+            }
+            $access = str_replace($match,'//'.$currPath[0].str_replace('//','/',$match),$access);
+        }
+    }
+    file_put_contents(dirname(__FILE__).'/nginx.conf',$access);
+}else{
+    preg_match_all('/\/\/(.*?)\/errors\/[\d]{3}/',$access,$matches);
+    foreach($matches[0] as $match){
+        if (preg_match('/\/errors\/([\d]{3})/', $match, $errorMatch)) {
+            $access = '//'.str_replace($match, $errorMatch[0], $access);
+        }
+    }
+    file_put_contents(dirname(__FILE__).'/nginx.conf',$access);
+}
+
+if(!file_exists(NW_UPLOADS.NW_DS.'profile')) mkdir(NW_UPLOADS.NW_DS.'profile');
+
 ?>

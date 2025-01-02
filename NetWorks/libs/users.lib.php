@@ -19,12 +19,11 @@ class Users{
         if($this->conn->setCredential($cred['server'],$cred['user'],$cred['psw'])){
             $this->db = $this->conn->selectDB($cred['db']);
         }
-        return $this;
     }
     /**
      * Returns the clients IP address
      *
-     * @return Array<ip,visibility> users IPV4 data
+     * @return array users IPV4 data
      */
     public function IP(){
         $status = ['ip'=>'','visibility'=>''];
@@ -80,6 +79,14 @@ class Users{
             $this->conn->close();
             return false;
         } 
+    }
+    /**
+     * Checks if user is online
+     * @param string $username
+     * @return bool
+     */
+    public function isOnline(string $username):bool{
+        return strtotime($this->db->selectData('users',['*'],'WHERE username="'.$username.'"')[0]['OnlineStat'])+5 > time();
     }
 }
 ?>

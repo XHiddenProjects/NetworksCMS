@@ -13,7 +13,7 @@ class HTMLForm{
     protected array $lang;
     protected array $elements=[];
     protected int $rowIndex, $colsIndex;
-    protected array $rowClass=array(), $colClass=array();
+    protected array $rowClass=[], $colClass=[];
     public function __construct() {
         # nothing
         if(file_exists(NW_SQL_CREDENTIALS)){
@@ -26,7 +26,6 @@ class HTMLForm{
             }
             $sql->close();
         }
-        return $this;
     }
     /**
      * Cleans the users input
@@ -285,8 +284,11 @@ class HTMLForm{
                             $this->elements[$this->rowIndex][$this->colsIndex] = '<div class="g-recaptcha my-3" required data-sitekey="'.$captcha[0]['reCAPTCHA_siteKey'].'" data-callback="gSubmit" data-expired-callback="gExpire"></div>';
                     }
                     return $this;
-                }else return $this;
+                } else {
+                    return $this;
+                }
             }
+            return $this;
         }else return $this;
     }
 
