@@ -32,7 +32,7 @@ window.onload = function() {
 //Sign up
 FormAction((form)=>{
     let passed=true, captchaActive=false;
-    (new Request('../assets/php/config.php?type=recaptcha&value=reCAPTCHA_active')).send().onSuccess((d)=>{
+    (new Request(`${toRelPath()}/assets/php/config.php?type=recaptcha&value=reCAPTCHA_active`)).send().onSuccess((d)=>{
         d = JSON.parse(d);
         if(parseInt(d['success'])) captchaActive = true;
     });
@@ -48,14 +48,14 @@ FormAction((form)=>{
     });
     if($(form).hasClass('nw_signup')){
         if(passed){
-            (new Request(`../assets/php/user.php?action=add&username=${form.querySelector('#username').value}&email=${form.querySelector('#email').value}&psw=${form.querySelector('#psw').value}&cpsw=${form.querySelector('#cpsw').value}&fname=${form.querySelector('#fname').value}&mint=&lname=${form.querySelector('#lname').value}&perm=guest`))
+            (new Request(`${toRelPath()}assets/php/user.php?action=add&username=${form.querySelector('#username').value}&email=${form.querySelector('#email').value}&psw=${form.querySelector('#psw').value}&cpsw=${form.querySelector('#cpsw').value}&fname=${form.querySelector('#fname').value}&mint=&lname=${form.querySelector('#lname').value}&perm=guest`))
             .send().onSuccess((d)=>{
                 let getIP ='', secretKey='';
-                    (new Request('../assets/php/user.php?action=get&type=ip')).send().onSuccess((d)=>{
+                    (new Request(`${toRelPath()}assets/php/user.php?action=get&type=ip`)).send().onSuccess((d)=>{
                         d = JSON.parse(d);
                         getIP = d['success'];
                 });
-                (new Request('../assets/php/config.php?type=recaptcha&value=reCAPTCHA_secretKey')).send().onSuccess((d)=>{
+                (new Request(`${toRelPath()}assets/php/config.php?type=recaptcha&value=reCAPTCHA_secretKey`)).send().onSuccess((d)=>{
                     secretKey = d['success'];
                 });
 
@@ -88,14 +88,14 @@ FormAction((form)=>{
                     $(form.querySelector('.errmsg')).parent().removeClass('d-none');
                     $(form.querySelector('.errmsg')).text(e['err']);
                 }else {
-                    (new Request(`../assets/php/mail.php?type=verify&email=${form.querySelector('#email').value}&username=${form.querySelector('#username').value}`)).send();
+                    (new Request(`${toRelPath()}assets/php/mail.php?type=verify&email=${form.querySelector('#email').value}&username=${form.querySelector('#username').value}`)).send();
                     console.log('success');
                 }
             });
         }
     } 
     if($(form).hasClass('nw_login')){
-        (new Request(`../assets/php/user.php?action=login&username=${form.querySelector('#usernameEmail').value}&psw=${form.querySelector('#psw').value}`)).send()
+        (new Request(`${toRelPath()}assets/php/user.php?action=login&username=${form.querySelector('#usernameEmail').value}&psw=${form.querySelector('#psw').value}`)).send()
         .onSuccess((d)=>{
             const e = JSON.parse(d);
             if(e['err']){

@@ -38,7 +38,7 @@ class Web{
         $queries = array();
         foreach(explode('&',$parseURL) as $query){
             $e = explode('=',$query);
-            $queries[$e[0]] = $e[1];
+            $queries[$e[0]] = $e[1]??'';
         }
         return $queries;
     }
@@ -77,11 +77,11 @@ class Web{
         return parse_url($this->url,PHP_URL_PASS);
     }
     /**
-     * Returns the accessable URL
+     * Returns the Accessible URL
      *
      * @return string|null
      */
-    public function toAccessable():string|null{
+    public function toAccessible():string|null{
         $replace = str_replace(search: dirname(path: __DIR__, levels: 2) . '\\', replace: (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/", subject: $this->url);
         $replace = str_replace(search: dirname(path: __DIR__, levels: 2) . '/', replace: (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]/", subject: $this->url);
         return trim(string: filter_var(value: $replace, filter: FILTER_SANITIZE_URL), characters: '/');

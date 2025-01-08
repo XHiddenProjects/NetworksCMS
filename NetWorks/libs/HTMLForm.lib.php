@@ -4,7 +4,7 @@ namespace networks\libs;
 use networks\Exception\NumberHandlingException;
 use networks\libs\Lang;
 use SSQL;
-require_once(dirname(__DIR__).'/init.php');
+require_once dirname(__DIR__).'/init.php';
 /**
  * HTML Form
  */

@@ -3,6 +3,7 @@ namespace networks\libs;
 
 use networks\Exception\PluginHandlingException;
 require_once(dirname(__DIR__).'/init.php');
+use SSQL;
 /**
  * Plugin compiler
  * @author XHiddenProjects <xhiddenprojects@gmail.com>
@@ -16,13 +17,32 @@ class Plugins{
     protected array $args;
     protected bool $isInit=false;
     protected bool $active=false;
+    protected bool $isSupported = false;
     /**
      * Create a plugin class
      *
-     * @param string|null $pname Plugins name
+     * @param string $pname Plugins name
+     * @param bool|null $status [Optional] - Plugins status
+     * @param bool|null $disable [Optional] - Disables the active status
      */
-    public function __construct(String|null $pname=null) {
-        $this->plugin = $pname;
+    public function __construct(string|null $pname=null, bool|null $status=false, bool|null $disable=false) {
+        $this->plugin = $pname??'';
+        $this->active = $status??false;
+        $this->disable = $disable??false;
+        $currentVersion = file_get_contents('https://raw.githubusercontent.com/XHiddenProjects/NetWorks/refs/heads/master/VERSION');
+        $isEnded=false;
+        $index=0;
+        if($this->plugin){
+            $code = json_decode(file_get_contents(NW_PLUGINS.NW_DS.$this->plugin.NW_DS.'lang'.NW_DS.(new Lang())->current().'.json'),true);
+            if(isset($code['support'])){
+                while(!$this->isSupported&&!$isEnded){
+                    if(version_compare(trim($code['support'][$index]), trim($currentVersion),'==')) $this->isSupported = true;
+                    else $index++;
+                    if(count($code['support'])==$index) $isEnded = true;
+                }
+                if(!$this->isSupported) $this->update(false);
+            }else die($this->plugin.(new Lang())->get('Errors','noPluginSupportObj'));
+        }
     }
     /**
      * Initiate the plugin
@@ -30,7 +50,16 @@ class Plugins{
      * @return Plugins
      */
     public function init():Plugins{
-        $this->isInit = true;
+        if(file_exists(NW_SQL_CREDENTIALS)&&$this->plugin){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                if(!$db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\""))
+                    $db->addData('plugins',['pluginName','pluginStatus'], [$this->plugin,(int)$this->active]);
+                $this->isInit = true;
+            }
+        }
         return $this;
     }
     /**
@@ -74,8 +103,53 @@ class Plugins{
      * @return bool
      */
     public function isActive():bool{
-        if($this->active) return true;
+        $active = false;
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $active = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\"");
+            }
+        }
+        if($active[0]['pluginStatus']) return true;
         else return false;
+    }
+    public function isDisabled():bool{
+        $disabled = false;
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $disabled = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\"");
+            }
+        }
+        if($disabled[0]['pluginDisabled']) return true;
+        else return false;
+    }
+    /**
+     * Updates the active status
+     * @param bool|null $forceStatus forces the status
+     * @return bool TRUE if success updated, else FALSE
+     */
+    public function update(bool|null $forceStatus=null): bool{
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                if($forceStatus==null){
+                    $a = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\" AND pluginDisabled=0");
+                    if($db->updateData('plugins',"pluginStatus=".($a ? 0 : 1), "pluginName=\"{$this->plugin}\""))
+                        return true;
+                }else{
+                    if($db->updateData('plugins',"pluginStatus=".($forceStatus ? 1 : 0), "pluginName=\"{$this->plugin}\""))
+                        return true;
+                }
+            }
+        }
+        return false;
     }
     /**
      * List all the plugins in the _plugins_ folder
@@ -83,7 +157,7 @@ class Plugins{
      * @return array
      */
     public function list():array{
-        return array_diff(scandir(NW_PLUGINS),['.','..']);
+        return array_values(array_diff(scandir(NW_PLUGINS),['.','..']));
     }
     /**
      * Executes the plugin

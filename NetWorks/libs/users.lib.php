@@ -86,7 +86,7 @@ class Users{
      * @return bool
      */
     public function isOnline(string $username):bool{
-        return strtotime($this->db->selectData('users',['*'],'WHERE username="'.$username.'"')[0]['OnlineStat'])+5 > time();
+        return strtotime($this->db->selectData('users',['*'],"WHERE username='{$username}'")[0]['OnlineStat'])+5 > time();
     }
 }
 ?>

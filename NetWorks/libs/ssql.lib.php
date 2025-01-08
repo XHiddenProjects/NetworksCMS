@@ -207,7 +207,7 @@ class SSQL{
 		}
 	}
 	public function updateData(string $tbname, string $replacement, string $condition='') : bool{
-		$sql = 'UPDATE '.strtolower($tbname).' SET '.$replacement.($condition!=='' ? ' WHERE '.$condition : '');
+		$sql = "UPDATE " . strtolower($tbname) . " SET $replacement" . ($condition !== '' ? " WHERE $condition" : '');
 		if($this->conn->query($sql)===TRUE){
 			return true;
 		}else{

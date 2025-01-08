@@ -1,3 +1,9 @@
+//Tooltip initiate
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+[...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+// Initialize the variables
+
 var toRelPath = ()=>{
     let path='';
     if((new URLParse()).getPath().filter((i)=>{return i!=='';}).length>2){
@@ -21,10 +27,6 @@ let lang=null, dict=null;
 (new Request(`${toRelPath()}languages/${lang}.json`)).send().onSuccess((d)=>{
     dict = JSON.parse(d);
 });
-
-// Initialize the variables
-
-
 
 
 // Constants
@@ -87,7 +89,7 @@ getDict = ()=>{
  */
 countUsers = (addYears=5)=>{
     let numUsers=[];
-    (new Request(`${toRelPath()}assets/php/user.php?action=count&startYear=${(new Date()).getFullYear()}&endYear=${(new Date().getFullYear() + addYears)}`)).send().onSuccess((d)=>{
+    (new Request(`${toRelPath()}api/users/limit?by=year&startYear=${(new Date()).getFullYear()}&endYear=${(new Date().getFullYear() + addYears)}`)).send().onSuccess((d)=>{
         d = JSON.parse(d);
         const yearData = {};
         rangeYear((new Date()).getFullYear(),addYears).forEach((years)=>{
@@ -101,6 +103,32 @@ countUsers = (addYears=5)=>{
     });
     return numUsers;
 },
+
+countForums = ()=>{
+    let forumNum=0;
+    (new Request(`${toRelPath()}api/forums/list`)).send().onSuccess((d)=>{
+        d = JSON.parse(d);
+        forumNum = d['success'].length;
+    });
+    return forumNum;
+},
+countTopics = ()=>{
+    let forumNum=0;
+    (new Request(`${toRelPath()}api/topics/list`)).send().onSuccess((d)=>{
+        d = JSON.parse(d);
+        forumNum = d['success'].length;
+    });
+    return forumNum;
+},
+countReplies = ()=>{
+    let forumNum=0;
+    (new Request(`${toRelPath()}api/replies/list`)).send().onSuccess((d)=>{
+        d = JSON.parse(d);
+        forumNum = d['success'].length;
+    });
+    return forumNum;
+}
+
 /**
  * Returns the random number
  * @param {String} type The type of randomness

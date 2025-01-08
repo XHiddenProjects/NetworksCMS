@@ -27,6 +27,7 @@
                                     <li><a class="dropdown-item" href="%PATH=NW_ROOT%/dashboard/profile"><img src="%FILE_EXISTS=%PATH=NW_UPLOADS%/profile/%USERNAME%.png%%PATH=NW_UPLOADS%/profile/%USERNAME%.png%END%%ELSE%https://cdn-icons-png.flaticon.com/512/3177/3177440.png%END%" class="nw_dashboard_ico"/> %LANG=Dashboard,profile,title%</a></li>
                                     %IS_ADMIN%
                                     <li><a class="dropdown-item" href="%PATH=NW_ROOT%/dashboard/config"><img src="https://cdn-icons-png.flaticon.com/512/3953/3953226.png" class="nw_dashboard_ico"/> %LANG=Dashboard,config,title%</a></li>
+                                    <li><a class="dropdown-item" href="%PATH=NW_ROOT%/dashboard/plugins"><img src="https://cdn-icons-png.flaticon.com/512/4370/4370906.png" class="nw_dashboard_ico"/> %LANG=Dashboard,plugins,title%</a></li>
                                     %END%
                                 </ul>
                             </li>
@@ -38,18 +39,27 @@
                 </div>
             </nav>
             <div class="nwcontent mx-2">
+                %BEFOREMAIN%
                 %URL_PATH=dashboard%
-                    %IS_ADMIN%
-                        <div class="row">
+                    <div class="row">   
+                        %IS_ADMIN%
                             <div class="col">
                                 <canvas class="nw_status_charts" id="nw_users"></canvas>
                             </div>
+                        %END%
+                        <div class="col">
+                            <canvas class="nw_status_charts" id="nw_posts"></canvas>
                         </div>
-                    %END%
+                    </div>
+                    
                 %END%
                 %URL_PATH=dashboard/profile%
 
                 %END%
+                %URL_PATH=dashboard/plugins%
+                    %RENDER_PLUGIN_LIST%
+                %END%
+                %AFTERMAIN%
             </div>
         </div>
         %FOOTERJS%

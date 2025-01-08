@@ -9,82 +9,105 @@ use SSQL;
 
 require_once(dirname(__DIR__).'/init.php');
 (!defined('NW_DICTIONARY_USER') ? define('NW_DICTIONARY_DEFAULT',array(
-    '%USER_LANGUAGE%'=>function(){return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);},
-    '%USER_DATETIME%'=>function(){return date('Y-m-d H:i:s');},
-    '%USER_DATE%'=>function(){return date('Y-m-d');},
-    '%USER_TIME%'=>function(){return date('H:i:s');},
-    '%USER_IP%'=>function(){return (new Users())->IP()->ip;},
-    '%USER_IP_VISIBILITY%'=>function(){return (new Users())->IP()->visibility;},
+    '%USER_LANGUAGE%'=>function(): string{return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);},
+    '%USER_DATETIME%'=>function(): string{return date('Y-m-d H:i:s');},
+    '%USER_DATE%'=>function(): string{return date('Y-m-d');},
+    '%USER_TIME%'=>function(): string{return date('H:i:s');},
+    '%USER_IP%'=>function(): mixed{
+        $ipData = (new Users())->IP();
+        return is_object($ipData) ? $ipData->ip : $ipData['ip'];
+    },
+    '%USER_IP_VISIBILITY%'=>function(): mixed{
+        $ipData = (new Users())->IP();
+        return is_object($ipData) ? $ipData->visibility : $ipData['visibility'];
+    },
     '%USER_IS_ONLINE%((.|\n)*?)%END%'=>function($e){if(isset($_COOKIE['user'])) return $e[1];},
     '%USER_IS_OFFLINE%((.|\n)*?)%END%'=>function($e){if(!isset($_COOKIE['user'])) return $e[1];},
-    '%USERNAME%'=>function(){return $_COOKIE['user'];}
+    '%USERNAME%'=>function(): mixed{return $_COOKIE['user'];}
 )) : '');
 (!defined('NW_DICTIONARY_META') ? define('NW_DICTIONARY_META',array(
-    '%META_CHARSET=(.+?)%'=>function($e){return '<meta charset="'.$e[1].'"/>';},
-    '%META_DESCRIPTION=(.+)%'=>function($e){return '<meta name="description" content="'.$e[1].'"/>';},
-    '%META_VIEWPORT%'=>function(){return '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>';},
-    '%META_AUTHOR=(.+)%'=>function($e){return '<meta name="author" content="'.$e[1].'"/>';},
-    '%META_TWITTER_CARD=(.+)%'=>function($e){return '<meta name="twitter:card" content="'.$e[1].'"/>';},
-    '%META_TWITTER_TITLE=(.+)%'=>function($e){return '<meta name="twitter:title" content="'.$e[1].'"/>';},
-    '%META_TWITTER_DESCRIPTION=(.+)%'=>function($e){return '<meta name="twitter:description" content="'.$e[1].'"/>';},
+    '%META_CHARSET=(.+?)%'=>function($e): string{return '<meta charset="'.$e[1].'"/>';},
+    '%META_DESCRIPTION=(.+)%'=>function($e): string{return '<meta name="description" content="'.$e[1].'"/>';},
+    '%META_VIEWPORT%'=>function(): string{return '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>';},
+    '%META_AUTHOR=(.+)%'=>function($e): string{return '<meta name="author" content="'.$e[1].'"/>';},
+    '%META_TWITTER_CARD=(.+)%'=>function($e): string{return '<meta name="twitter:card" content="'.$e[1].'"/>';},
+    '%META_TWITTER_TITLE=(.+)%'=>function($e): string{return '<meta name="twitter:title" content="'.$e[1].'"/>';},
+    '%META_TWITTER_DESCRIPTION=(.+)%'=>function($e): string{return '<meta name="twitter:description" content="'.$e[1].'"/>';},
     '%META_TWITTER_IMAGE=(https?:\/\/([\da-z\.-]+\.[a-z\.]{2,6}|[\d\.]+)([\/:?=&#]{1}[\da-z\.-]+)*[\/\?]?)%'=>function($e){return '<meta name="twitter:image" content="'.$e[1].'"/>';},
-    '%META_OG_TITLE=(.+)%'=>function($e){return '<meta property="og:title" content="'.$e[1].'"/>';},
-    '%META_OG_DESCRIPTION=(.+)%'=>function($e){return '<meta property="og:description" content="'.$e[1].'"/>';},
+    '%META_OG_TITLE=(.+)%'=>function($e): string{return '<meta property="og:title" content="'.$e[1].'"/>';},
+    '%META_OG_DESCRIPTION=(.+)%'=>function($e): string{return '<meta property="og:description" content="'.$e[1].'"/>';},
     '%META_OG_IMAGE=(https?:\/\/([\da-z\.-]+\.[a-z\.]{2,6}|[\d\.]+)([\/:?=&#]{1}[\da-z\.-]+)*[\/\?]?)%'=>function($e){return '<meta property="og:image" content="'.$e[1].'"/>';},
     '%META_OG_URL=(https?:\/\/([\da-z\.-]+\.[a-z\.]{2,6}|[\d\.]+)([\/:?=&#]{1}[\da-z\.-]+)*[\/\?]?)%'=>function($e){return '<meta property="og:url" content="'.$e[1].'"/>';},
-    '%META_LINKEDIN_NAME=(.+)%'=>function($e){return '<meta itemprop="name" content="'.$e[1].'"/>';},
-    '%META_LINKEDIN_DESCRIPTION=(.+)%'=>function($e){return '<meta itemprop="description" content="'.$e[1].'"/>';},
+    '%META_LINKEDIN_NAME=(.+)%'=>function($e): string{return '<meta itemprop="name" content="'.$e[1].'"/>';},
+    '%META_LINKEDIN_DESCRIPTION=(.+)%'=>function($e): string{return '<meta itemprop="description" content="'.$e[1].'"/>';},
     '%META_LINKEDIN_IMAGE=(https?:\/\/([\da-z\.-]+\.[a-z\.]{2,6}|[\d\.]+)([\/:?=&#]{1}[\da-z\.-]+)*[\/\?]?)%'=>function($e){return '<meta itemprop="image" content="'.$e[1].'"/>';},
     '%META_LINKEDIN_URL=(https?:\/\/([\da-z\.-]+\.[a-z\.]{2,6}|[\d\.]+)([\/:?=&#]{1}[\da-z\.-]+)*[\/\?]?)%'=>function($e){return '<meta itemprop="url" content="'.$e[1].'"/>';},
     '%META=(.+)%'=>function($e){return '<meta '.$e[1].'/>';}
 )) : '');
 (!defined('NW_DICTIONARY_HOOKS') ? define('NW_DICTIONARY_HOOKS',array(
-    '%CONFIG=(.*?)%'=>function($e){
+    '%CONFIG=(.*?)%'=>function($e): string{
         $footerjs='';
         foreach((new Plugins())->list() as $plugin){
             $footerjs.=(new Plugins($plugin))->init()->setPlacement('config')->setArgs(...explode(';',$e[1]))->exec();
         }
         return $footerjs;
     },
-    '%HEAD%'=>function(){
+    '%HEAD%'=>function(): string{
         $heading='';
         foreach((new Plugins())->list() as $plugin){
             $heading.=(new Plugins($plugin))->init()->setPlacement('head')->setArgs()->exec();
         }
         return $heading;
     },
-    '%BEFORELOAD%'=>function(){
+    '%BEFORELOAD%'=>function(): string{
         $bLoad='';
         foreach((new Plugins())->list() as $plugin){
             $bLoad.=(new Plugins($plugin))->init()->setPlacement('beforeLoad')->setArgs()->exec();
         }
         return $bLoad;
     },
-    '%AFTERLOAD%'=>function(){
+    '%AFTERLOAD%'=>function(): string{
         $aLoad='';
         foreach((new Plugins())->list() as $plugin){
             $aLoad.=(new Plugins($plugin))->init()->setPlacement('afterLoad')->setArgs()->exec();
         }
         return $aLoad;
     },
-    '%FOOTER%'=>function(){
+    '%FOOTER%'=>function(): string{
         $footer='';
         foreach((new Plugins())->list() as $plugin){
             $footer.=(new Plugins($plugin))->init()->setPlacement('footer')->setArgs()->exec();
         }
         return $footer;
     },
-    '%FOOTERJS%'=>function(){
+    '%FOOTERJS%'=>function(): string{
         $footerjs='';
         foreach((new Plugins())->list() as $plugin){
             $footerjs.=(new Plugins($plugin))->init()->setPlacement('footerjs')->setArgs()->exec();
         }
         return $footerjs;
+    },
+    '%BEFOREMAIN%'=>function(): string{
+        $db='';
+        foreach((new Plugins())->list() as $plugin){
+            $db.=(new Plugins($plugin))->init()->setPlacement('beforeMain')->setArgs()->exec();
+        }
+        return $db;
+    },
+    '%AFTERMAIN%'=>function(): string{
+        $db='';
+        foreach((new Plugins())->list() as $plugin){
+            $db.=(new Plugins($plugin))->init()->setPlacement('afterMain')->setArgs()->exec();
+        }
+        return $db;
     }
 )) : '');
 (!defined('NW_DICTIONARY_LANG') ? define('NW_DICTIONARY_LANG', [
-    '%LANG=(.+?)%'=>function($e){$s = explode(',',$e[1]); return (new Lang())->get($s);},
-    '%PATH=(.+?)%'=>function($e){return (new Web(constant($e[1])))->toAccessable();}
+    '%LANG=(.+?)%'=>function($e): mixed{$s = explode(',',$e[1]); return (new Lang())->get($s);},
+    '%PATH=(.+?)%'=>function($e): string|null{
+        $constantValue = constant($e[1]);
+        return is_string($constantValue) ? (new Web($constantValue))->toAccessible() : null;
+    }
 ]) : '');
 (!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', [
     '%LISTPAGES%'=>function(){
@@ -108,6 +131,52 @@ require_once(dirname(__DIR__).'/init.php');
     },
     '%DOCERROR%'=>function(){
         return http_response_code();
+    },
+    '%RENDER_PLUGIN_LIST%'=>function(): string{
+        $plugins = (new Plugins())->list();
+        $grid=[];
+        for($r=0;$r<ceil(count($plugins)/5);$r++){
+            for($c=0;$c<5;$c++){
+            $index = $r * 5 + $c;
+            if(isset($plugins[$index]))
+                $grid[$r][$c] = ['name'=>$plugins[$index], 'icon'=>(new Web(NW_PLUGINS.NW_DS.$plugins[$index].NW_DS.'icon.png'))->toAccessible()];
+            }
+        }
+        $grid = array_merge(...$grid);
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $pluginsPerPage = 4;
+        $totalPlugins = count($grid);
+        $totalPages = ceil($totalPlugins / $pluginsPerPage);
+        $startIndex = ($page - 1) * $pluginsPerPage;
+        $endIndex = min($startIndex + $pluginsPerPage, $totalPlugins);
+        $out='';
+        $out .= '<div class="row">';
+        for ($i = $startIndex; $i < $endIndex; $i++) {
+            $plugin = $grid[$i];
+            $pLang = json_decode(file_get_contents(NW_PLUGINS.NW_DS.$plugin['name'].NW_DS.'lang'.NW_DS.(new Lang())->current().'.json'),true);
+            $out .= '<div class="col">
+            <div class="card" style="width: 18rem;">';
+            $out .= '<img class="card-img-top" src="' . $plugin['icon'] . '" alt="' . $plugin['name'] . '">';
+            $out .= '<div class="card-body">';
+            $out .= '<h3 class="text-center text-capitalize">' . $pLang['name'] . '</h3>';
+            $out .= '<p class="text-muted text-center">'.$pLang['description'].'</p>';
+            $out .= '<p class="text-muted text-center"><span class="fw-bold">v'.$pLang['version'].'</span> &#8211; <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'.(new Lang())->get('Dashboard','plugins','lastUpdated').': '.(new Utils())->date_format($pLang['lastUpdated']).'" href="'.$pLang['website'].'">'.$pLang['author'].'</a></p>';
+            $out.='<div class="form-check form-switch">
+                <input class="form-check-input pluginToggle" plugin-name="'.$plugin['name'].'" type="checkbox" '.((new Plugins($plugin['name']))->isActive() ? 'checked ' : '').((new Plugins($plugin['name']))->isDisabled() ? 'disabled ' : '').'role="switch" id="pluginToggle_'.$plugin['name'].'">
+                <label class="form-check-label" for="pluginToggle_'.$plugin['name'].'"></label>
+            </div>';
+            $out .= '</div>';
+            $out .= '</div>
+            </div>';
+        }
+        $out.='</div>';
+        $out .= '<nav class="navigation mt-5 d-flex justify-content-center">
+        <ul class="pagination">';
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $out .= '<li class="page-item"><a href="?page=' . $i . '"' . ($i === $page ? ' class="page-link active"' : 'class="page-link"') . '>' . $i . '</a></li>';
+        }
+        $out .= '</ul></nav>';
+        return $out;
     }
 ]) : '');
 (!defined('NW_DICTIONARY_CONFIG') ? define('NW_DICTIONARY_CONFIG',[

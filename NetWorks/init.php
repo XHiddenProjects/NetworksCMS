@@ -18,7 +18,7 @@ $lang = new Lang();
 (!defined('NW_LANG') ? define('NW_LANG',dirname(__FILE__).NW_DS.'languages') : '');
 (!defined('NW_DRAFTS') ? define('NW_DRAFTS',dirname(__FILE__).NW_DS.'drafts') : '');
 (!defined('NW_UPLOADS') ? define('NW_UPLOADS',dirname(__FILE__).NW_DS.'uploads') : '');
-(!defined('NW_SQL_CREDENTIALS') ? define('NW_SQL_CREDENTIALS',NW_ASSETS.NW_DS.'sql'.NW_DS.'credentals.json') : '');
+(!defined('NW_SQL_CREDENTIALS') ? define('NW_SQL_CREDENTIALS',NW_ASSETS.NW_DS.'sql'.NW_DS.'credentials.json') : '');
 (!defined('NW_CHARSET') ? define('NW_CHARSET','UTF-8') : '');
 foreach(array_diff(scandir(NW_PLUGINS),['.','..']) as $plugins){
     try{

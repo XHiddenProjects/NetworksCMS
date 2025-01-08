@@ -2,7 +2,7 @@
 namespace networks\libs;
 
 use SSQL;
-
+include_once dirname(__DIR__).'/init.php';
 /**
  * Utils
  * @author XHiddenProjects <xhiddenprojects@gmail.com>
@@ -17,7 +17,7 @@ class Utils{
     /**
      * Converts array to named parameters
      *
-     * @param array $arr Array of strings to convert into named prameters
+     * @param array $arr Array of strings to convert into named parameters
      * @return array
      */
     public function extractParam(array $arr){
@@ -92,10 +92,8 @@ class Utils{
 			}
 		}
 		if ($bad) {
-			return 'PHP modules missing:';
-			return $missing;
-			exit();
-		}
+			return "PHP modules missing: {$missing}";
+		}else return '';
     }
     /**
      * Checks if mail function exists
@@ -156,6 +154,21 @@ class Utils{
 		if($bcc != "")
 			$headers .= 'Bcc: '.$bcc."\r\n";
         return mail($to, $subject, $body, $headers);
+    }
+    /**
+     * Returns the correct date format
+     * @return string formatted datetime
+     */
+    public function date_format(string $datetime): string{
+        $sql = new SSQL();
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $dFormat = $db->selectData('config',['dFormat']);
+                return date($dFormat[0]['dFormat'], strtotime($datetime));
+            }else return '';
+        }else return '';
     }
 }
 ?>

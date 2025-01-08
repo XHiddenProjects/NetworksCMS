@@ -1,4 +1,5 @@
 {
+    "pleural":"s",
     "Project":{
         "name": "NetWorks",
         "author": "XHiddenProjects",
@@ -18,7 +19,10 @@
         "noUsername": "No Username exists",
         "invalidPsw": "Invalid password",
         "MinMaxError":"Minimum must be less than the maximum!",
-        "RangeError": "The number is out of range"
+        "RangeError": "The number is out of range",
+        "noRoute":"Route not found",
+        "apiNotFound": "API not found",
+        "noPluginSupportObj": " must have a support object"
     },
     "DocumentError":{
         "400": "Bad Request",
@@ -74,7 +78,18 @@
         },
         "profile":{
             "title":"Profile"
+        },
+        "plugins":{
+            "title": "Plugins",
+            "lastUpdated": "Last Updated"
         }
+    },
+    "Posts":{
+        "forum":"Forum",
+        "replies":"Replies",
+        "reply":"Reply",
+        "topic":"Topic",
+        "posted":"Posted"
     },
     "mail":{
         "verify":{
@@ -87,6 +102,9 @@
         "userGraph": {
             "title": "# of users",
             "label": "Users"
+        },
+        "postGraph":{
+            "title": "Posts"
         }
     },
     "dateTimes":{

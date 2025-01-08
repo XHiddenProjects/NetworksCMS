@@ -5,11 +5,9 @@ use networks\libs\Dictionary;
 use networks\Exception\FileHandlingException;
 use networks\libs\Lang;
 
-require_once(dirname(__DIR__).'/init.php');
-require_once('dictionary.lib.php');
-require_once('lang.lib.php');
-# Exceptions
-require_once(dirname(__DIR__).'/Exceptions/FileHandlingException.php');
+require_once dirname(__DIR__).'/init.php';
+
+
 /**
  * Networks Template compiler
  * @author XHiddenProjects <xhiddenprojects@gmail.com>
