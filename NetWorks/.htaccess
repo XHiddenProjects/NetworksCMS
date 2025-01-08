@@ -116,3 +116,4 @@ ErrorDocument 500 //NetWorks/errors/500.php
 # Redirects
 RewriteRule ^auth/(.*)$ auth.php/$1 [L]
 RewriteRule ^dashboard/(.*)$ dashboard.php/$1 [L]
+RewriteRule ^api/(.*)$ api.php/$1 [L]
