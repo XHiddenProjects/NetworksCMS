@@ -2,6 +2,9 @@
 namespace networks\libs;
 
 use SSQL;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use FilesystemIterator;
 include_once dirname(__DIR__).'/init.php';
 /**
  * Utils
@@ -21,10 +24,10 @@ class Utils{
      * @return array
      */
     public function extractParam(array $arr){
-        $args = array();
+        $args = [];
         foreach($arr as $a){
             $e = explode(':',$a);
-            $args[$e[0]] = $e[1];
+            $args[$e[0]] = $e[1]??'';
         }
         return $args;
     }
@@ -35,44 +38,82 @@ class Utils{
 	 * @param int $digits Digits to display
 	 * @return string|bool Size (KB, MB, GB, TB) or boolean
 	 */	
-	public function getFilesize(string $file,int $digits = 2):string|bool{
+	public function fileSize(string $file,int $digits = 2):string|bool{
 		$bytes = filesize($file);
-		if ($bytes < 1024) return $bytes.' B';
+        if ($bytes < 1024) return "{$bytes} B";
 		elseif ($bytes < 1048576) return round($bytes / 1024, $digits).' KB';
 		elseif ($bytes < 1073741824) return round($bytes / 1048576, $digits).' MB';
 		elseif ($bytes < 1099511627776) return round($bytes / 1073741824, $digits).' GB';
 		else return round($bytes / 1099511627776, $digits).' TB';	
 	}
     /**
+     * Returns the folder size
+     * @param string $dir Folder path
+     * @return string|bool Size (KB, MB, GB, TB) or boolean
+     */
+    public function folderSize($dir): float|int {
+        $count_size = 0;
+        $dir_array = array_diff(scandir($dir),['.','..']);
+        foreach ($dir_array as $filename) {
+            if (is_dir("{$dir}/{$filename}")) {
+                $folderSize = $this->folderSize("{$dir}/{$filename}");
+                $count_size += $folderSize;
+            } else if (is_file("{$dir}/{$filename}")) {
+                $count_size += filesize("{$dir}/{$filename}");
+            }
+        }
+        return $count_size;
+    }
+    /**
      * Converts filesize to human-readable format
      *
      * @param int|float $size Filesize
+     * @param int $digits Decimal places
      * @return string human-readable size
      */
-	protected function sizeConversion(int|float $size):string{
-        $unit = array('B','KB','MB','GB','TB','PB');
-        return round($size/pow(1024, ($i = floor(log($size, 1024)))), 2) . $unit[$i];
+	public function sizeConversion(int|float $size, int $digits=2):string{
+        $unit = ['B','KB','MB','GB','TB','PB'];
+        return round($size/pow(1024, $i = floor(log($size, 1024))), $digits) . ($unit[$i]??$unit[0]);
 	}
 		
 	/**
 	 * Method that controls the memory used
 	 * @param string $type Memory control type (available, peak or current usage)
-	 * @return string
+	 * @return int|float Memory space
 	 */
-	public function getMemory($type = 'usage') {
+	public function getMemory($type = 'usage'): int|float {
+        $type = strtolower(string: $type);
         if ((string) $type === 'available') {
-            $memoryAvailable = filter_var(ini_get("memory_limit"), FILTER_SANITIZE_NUMBER_INT);
+            $memoryAvailable = filter_var( ini_get( "memory_limit"), FILTER_SANITIZE_NUMBER_FLOAT);
             $memoryAvailable = $memoryAvailable * 1024 * 1024;
-            $size = (int) $memoryAvailable;
+            $size = $memoryAvailable;
         } elseif ((string) $type === 'peak') {
-            $size = (int) memory_get_peak_usage(true);
+            $size = memory_get_peak_usage( true);
         } elseif ((string) $type === 'usage') {
-            $size = (int) memory_get_usage(true);
+            $size = memory_get_usage( true);
         } else {
             $size = 0;
         }
-        return self::sizeConversion($size);
+        return $size;
 	}
+    /**
+     * 
+     * Gets the storage space
+     * @param string $type Storage type (available, free or used)
+     * @return int|float Storage space
+     */
+    public function getStorage(string $type='used'): int|float{
+        $available = disk_total_space(directory: NW_ROOT);
+        $free = disk_free_space(directory: NW_ROOT);
+        $used = $available - $free;
+        return match (strtolower(string: $type)) {
+            'available' => $available,
+            'free' => $free,
+            'used' => $used,
+            default => 0,
+        };
+    }
+
     /**
      * Checks for loaded modules
      *
@@ -169,6 +210,16 @@ class Utils{
                 return date($dFormat[0]['dFormat'], strtotime($datetime));
             }else return '';
         }else return '';
+    }
+
+    public function rmDir(string $dir): bool{
+        if (!is_dir($dir)) return false;
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            is_dir($path) ? $this->rmDir($path) : unlink($path);
+        }
+        return rmdir($dir);
     }
 }
 ?>

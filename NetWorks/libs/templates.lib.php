@@ -21,19 +21,19 @@ class Templates{
     /**
      * Generates HTML template from template/...
      *
-     * @param String $tname
+     * @param string $tname
      */
-    public function __construct(String $tname) {
+    public function __construct(string $tname) {
         $this->name = $tname;
         $this->lang = new Lang();
     }
     /**
      * Changes the dictionary for the themes.
      *
-     * @param String $path Folder path the change to.
+     * @param string $path Folder path the change to.
      * @return void
      */
-    public function chDir(String $path){
+    public function chDir(string $path){
         try{
             if(file_exists($path)&&is_dir($path))
                 $this->path = $path;
@@ -45,11 +45,11 @@ class Templates{
     /**
      * Undocumented function
      *
-     * @param String $compile HTML to compile
-     * @param Array $setDict Dictionary replacement
-     * @return String Compiled HTML format
+     * @param string $compile HTML to compile
+     * @param array $setDict Dictionary replacement
+     * @return string Compiled HTML format
      */
-    private function compile(String $compile, array $setDict){
+    private function compile(string $compile, array $setDict): mixed{
         $dict = new Dictionary();
         foreach($setDict as $key=>$val) $dict->addItem($key,$val);
         foreach($dict->listItem() as $key=>$value){
@@ -57,16 +57,29 @@ class Templates{
         }
         return $compile;
     }
+    /**
+     * minifies the HTML string
+     * @param string $html HTML to minify
+     * @return string Minified HTML
+     */
+    private function minify(string $html): string{
+        $html = preg_replace('/<!--.*?-->/s', '', $html);
+        $html = preg_replace('/\s+/', ' ', $html);
+        $html = preg_replace('/[\n\t\v]+/', ' ', $html);
+        $html = trim($html);
+        return $html;
+    }
+
 
     /**
      * Loads the HTML template
-     * @param Array<String> $dict Dictionary to use as a lookup
+     * @param array<string> $dict Dictionary to use as a lookup
      * 
-     * @return String|False Returns the HTML string, False if the file doesn't exist
+     * @return string|bool Returns the HTML string, False if the file doesn't exist
      */
-    public function load(Array $dict){
+    public function load(array $dict): string|bool{
         if(file_exists($this->path.NW_DS.$this->name.'.html')) 
-            return $this->compile(file_get_contents($this->path.NW_DS.$this->name.'.html'), $dict);
+            return $this->minify($this->compile(file_get_contents($this->path.NW_DS.$this->name.'.html'), $dict));
         else
             return false;
     }

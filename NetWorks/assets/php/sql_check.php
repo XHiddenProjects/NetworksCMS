@@ -39,7 +39,7 @@ if($sql->setCredential($_REQUEST['server'],$_REQUEST['user'],$_REQUEST['psw'])){
             'pageDraft'
         ],[
             'home',
-            'fa-solid fa-house',
+            'house',
         (new Web(NW_DRAFTS.NW_DS.'home.html'))->toAccessible()
         ]);
         $db->addData('pages',[
@@ -48,7 +48,7 @@ if($sql->setCredential($_REQUEST['server'],$_REQUEST['user'],$_REQUEST['psw'])){
             'pageDraft'
         ],[
             'forum',
-            'fa-solid fa-comments',
+            'forum',
             (new Web(NW_DRAFTS.NW_DS.'forum.html'))->toAccessible()
         ]);
         $db->addData('reCAPTCHA',[

@@ -5,6 +5,7 @@ use networks\libs\Lang;
 use networks\libs\Plugins;
 use networks\libs\Web;
 use networks\libs\HTMLForm;
+use networks\libs\Templates;
 use SSQL;
 
 require_once(dirname(__DIR__).'/init.php');
@@ -107,6 +108,10 @@ require_once(dirname(__DIR__).'/init.php');
     '%PATH=(.+?)%'=>function($e): string|null{
         $constantValue = constant($e[1]);
         return is_string($constantValue) ? (new Web($constantValue))->toAccessible() : null;
+    },
+    '%PATH_RAW=(.+?)%'=>function($e): string|null{
+        $constantValue = constant($e[1]);
+        return is_string($constantValue) ? $constantValue : null;
     }
 ]) : '');
 (!defined('NW_DICTIONARY_PAGES') ? define('NW_DICTIONARY_PAGES', [
@@ -120,7 +125,7 @@ require_once(dirname(__DIR__).'/init.php');
                 foreach($db->selectData('pages',['*']) as $page){
                     if(is_file(NW_ROOT.NW_DS.$page['pageName'].'.php')){
                         $out.='<li class="nav-item d-flex align-items-center px-2">
-                            <i class="'.$page['pageIcon'].'"></i>
+                            <i class="material-symbols-rounded">'.$page['pageIcon'].'</i>
                             <a class="nav-link '.(isset((new Web())->getPath()[1]) ? (strtolower($page['pageName'])===strtolower((new Web())->getPath()[count((new Web())->getPath()) - 1]) ? 'active' : '') : (strtolower($page['pageName'])==='home.php' ? 'active' : '')).'" aria-current="page" href="'.($page['pageName']==='home' ? './' : $page['pageName']).'">'.ucfirst($page['pageName']).'</a>
                         </li>';
                     }
@@ -129,8 +134,15 @@ require_once(dirname(__DIR__).'/init.php');
         }
         return $out;
     },
-    '%DOCERROR%'=>function(){
+    '%DOCERROR%'=>function(): bool|int{
         return http_response_code();
+    },
+    '%FILE_GET=(.+?)%'=>function($e): string{
+        preg_match('/(.*?)(?=[^\/]*$)/',$e[1],$dir);
+        $file = trim(str_replace($dir[1],'',$e[1]));
+        $temp = new Templates(preg_replace('/\..+$/','',$file));
+        $temp->chDir($dir[1]);
+        return file_exists($e[1]) ? $temp->load((new Dictionary())->merge(NW_DICTIONARY_LANG,NW_DICTIONARY_DEFAULT,NW_DICTIONARY_CONDITIONS,NW_DICTIONARY_CONFIG,NW_DICTIONARY_HOOKS,NW_DICTIONARY_FORMS)) : '';
     },
     '%RENDER_PLUGIN_LIST%'=>function(): string{
         $plugins = (new Plugins())->list();
@@ -139,43 +151,67 @@ require_once(dirname(__DIR__).'/init.php');
             for($c=0;$c<5;$c++){
             $index = $r * 5 + $c;
             if(isset($plugins[$index]))
-                $grid[$r][$c] = ['name'=>$plugins[$index], 'icon'=>(new Web(NW_PLUGINS.NW_DS.$plugins[$index].NW_DS.'icon.png'))->toAccessible()];
+                $grid[$r][$c] = ['name'=>$plugins[$index], 'icon'=>(new Web(NW_PLUGINS.NW_DS.$plugins[$index].NW_DS.'icon.webp'))->toAccessible()];
             }
         }
         $grid = array_merge(...$grid);
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $pluginsPerPage = 4;
+        $pluginsPerPage = 5;
         $totalPlugins = count($grid);
         $totalPages = ceil($totalPlugins / $pluginsPerPage);
         $startIndex = ($page - 1) * $pluginsPerPage;
         $endIndex = min($startIndex + $pluginsPerPage, $totalPlugins);
         $out='';
-        $out .= '<div class="row">';
+        $out .= '<div class="row mt-2 plugin-container">';
         for ($i = $startIndex; $i < $endIndex; $i++) {
             $plugin = $grid[$i];
             $pLang = json_decode(file_get_contents(NW_PLUGINS.NW_DS.$plugin['name'].NW_DS.'lang'.NW_DS.(new Lang())->current().'.json'),true);
             $out .= '<div class="col">
-            <div class="card" style="width: 18rem;">';
+            <div class="card h-100" style="width: 18rem;">';
             $out .= '<img class="card-img-top" src="' . $plugin['icon'] . '" alt="' . $plugin['name'] . '">';
             $out .= '<div class="card-body">';
-            $out .= '<h3 class="text-center text-capitalize">' . $pLang['name'] . '</h3>';
+            $out .= '<h3 class="text-center text-capitalize">' . $pLang['name'].' ('.(new Utils())->sizeConversion((new Utils())->folderSize(NW_PLUGINS.NW_DS.$plugin['name']),1). ')</h3>';
             $out .= '<p class="text-muted text-center">'.$pLang['description'].'</p>';
             $out .= '<p class="text-muted text-center"><span class="fw-bold">v'.$pLang['version'].'</span> &#8211; <a data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'.(new Lang())->get('Dashboard','plugins','lastUpdated').': '.(new Utils())->date_format($pLang['lastUpdated']).'" href="'.$pLang['website'].'">'.$pLang['author'].'</a></p>';
-            $out.='<div class="form-check form-switch">
-                <input class="form-check-input pluginToggle" plugin-name="'.$plugin['name'].'" type="checkbox" '.((new Plugins($plugin['name']))->isActive() ? 'checked ' : '').((new Plugins($plugin['name']))->isDisabled() ? 'disabled ' : '').'role="switch" id="pluginToggle_'.$plugin['name'].'">
+            $out.='<div class="d-inline-flex justify-content-between w-100 align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input pluginToggle" plugin-name="'.$plugin['name'].'" type="checkbox" '.((new Plugins((string)$plugin['name']))->isActive() ? 'checked ' : '').((new Plugins((string)$plugin['name']))->isDisabled() ? 'disabled ' : '').'role="switch" id="pluginToggle_'.$plugin['name'].'">
                 <label class="form-check-label" for="pluginToggle_'.$plugin['name'].'"></label>
+            </div>
+            '.(method_exists(new $plugin['name'],'config')&&((new Plugins((string)$plugin['name']))->isActive()) ? '<a href="'.(new Web( NW_ROOT))->toAccessible().'/dashboard/config?plugin='.$plugin['name'].'"><button class="btn btn-secondary"><span class="material-symbols-rounded">settings</span>'.(new Lang())->get('Dashboard','config', 'abbr').'</button></a>' : '').'
+            '.($plugin['name']==='core' ? '<button class="btn btn-danger" disabled><span class="material-symbols-outlined">delete</span></button>' : '<button data-bs-plugin="'.$plugin['name'].'" data-bs-toggle="modal" data-bs-target="#pluginDeletePrompt" type="button" class="btn btn-danger plugin-remover" plugin-name="'.$plugin['name'].'"><span class="material-symbols-outlined">delete</span></button>').'
             </div>';
             $out .= '</div>';
             $out .= '</div>
             </div>';
         }
         $out.='</div>';
-        $out .= '<nav class="navigation mt-5 d-flex justify-content-center">
-        <ul class="pagination">';
-        for ($i = 1; $i <= $totalPages; $i++) {
-            $out .= '<li class="page-item"><a href="?page=' . $i . '"' . ($i === $page ? ' class="page-link active"' : 'class="page-link"') . '>' . $i . '</a></li>';
+        $out .= '<nav class="navigation mt-5">
+        <ul class="pagination justify-content-center">
+        <li class="page-item'.($page-1<=0 ? ' disabled' : '').'">
+            <a class="page-link" '.($page-1<=0 ? '' : 'href="'.(new Web(NW_ROOT))->toAccessible().'/dashboard/plugins?page='.($page-1).'"').'>'.(new Lang())->get('Pagination','prev').'</a>
+        </li>';
+        if ($totalPages <= 5) {
+            for ($i = 1; $i <= $totalPages; $i++) {
+                $out .= '<li class="page-item"><a href="'.(new Web(NW_ROOT))->toAccessible().'/dashboard/plugins?page=' . $i . '"' . ($i === $page ? ' class="page-link active"' : 'class="page-link"') . '>' . $i . '</a></li>';
+            }
+        } else {
+            $out .= '<li class="page-item"><a href="'.(new Web(NW_ROOT))->toAccessible().'/dashboard/plugins?page=1" class="page-link'.($page === 1 ? ' active' : '').'">1</a></li>';
+            if ($page > 3) {
+                $out .= '<li class="page-item"><span class="page-link">...</span></li>';
+            }
+            for ($i = max(2, $page - 1); $i <= min($totalPages - 1, $page + 1); $i++) {
+                $out .= '<li class="page-item"><a href="'.(new Web(NW_ROOT))->toAccessible().'/dashboard/plugins?page=' . $i . '"' . ($i === $page ? ' class="page-link active"' : 'class="page-link"') . '>' . $i . '</a></li>';
+            }
+            if ($page < $totalPages - 2) {
+                $out .= '<li class="page-item"><span class="page-link">...</span></li>';
+            }
+            $out .= '<li class="page-item"><a href="'.(new Web(NW_ROOT))->toAccessible().'/dashboard/plugins?page=' . $totalPages . '"' . ($page === $totalPages ? ' class="page-link active"' : 'class="page-link"') . '>' . $totalPages . '</a></li>';
         }
-        $out .= '</ul></nav>';
+        $out .= '<li class="page-item'.($page+1>$totalPages ? ' disabled' : '').'">
+        <a class="page-link"'.($page+1>$totalPages ? '' : ' href="?page='.($page+1).'"').'>'.(new Lang())->get('Pagination','next').'</a>
+    </li>
+    </ul></nav>';
         return $out;
     }
 ]) : '');
@@ -248,6 +284,36 @@ require_once(dirname(__DIR__).'/init.php');
             return $data;
         }
     },
+    '%MEMORY(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getMemory()) : (new Utils())->getMemory();
+    },
+    '%MEMORY_AVAILABLE(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getMemory('available')) : (new Utils())->getMemory('available');
+    },
+    '%MEMORY_PEAK(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getMemory('peak')) : (new Utils())->getMemory('peak');
+    },
+    '%MEMORY_TOTAL(=true)?%'=>function($e): string|int|float{
+        $usedMemory = (new Utils())->getMemory();
+        $totalMemory = (new Utils())->getMemory('available');
+        $res = ($usedMemory / $totalMemory) * 100;
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: $res) : $res;
+    },
+    '%STORAGE(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getStorage()) : (new Utils())->getStorage();
+    },
+    '%STORAGE_FREE(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getStorage('free')) : (new Utils())->getStorage('free');
+    },
+    '%STORAGE_AVAILABLE(=true)?%'=>function($e): string|int|float{
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: (new Utils())->getStorage('available')) : (new Utils())->getStorage('available');
+    },
+    '%STORAGE_TOTAL(=true)?%'=>function($e): string|int|float{
+        $usedStorage = (new Utils())->getStorage();
+        $totalStorage = (new Utils())->getStorage('available');
+        $res = ($usedStorage / $totalStorage) * 100;
+        return isset($e[1]) ? (new Utils())->sizeConversion(size: $res) : $res;
+    }
 ]) : '');
 (!defined('NW_DICTIONARY_CONDITIONS') ? define('NW_DICTIONARY_CONDITIONS', [
     '%FILE_EXISTS=(.+?)%((.|\n)*?)%END%(%ELSE%((.|\n)*?)%END%)?'=>function($e){
@@ -293,10 +359,12 @@ require_once(dirname(__DIR__).'/init.php');
     //Make this last
     '%URL_PATH=(.+?)%((.|\n)*?)%END%'=>function($e){
         $url = (new Web())->getPath();
+        $e = array_values(array_filter($e,function($i){return trim($i)!=='';}));
         if($url[0]) unset($url[0]);
-        if(strcmp(strtolower($e[1]),strtolower(implode('/',array_values($url))))==0){
-            return $e[2];
-        }
+        return match (strcmp(strtolower($e[1]), strtolower(implode('/', array_values($url))))) {
+            0 => $e[2],
+            default => false,
+        };
     }
 ]) : '');
 (!defined('NW_DICTIONARY_FORMS') ? define('NW_DICTIONARY_FORMS', [
@@ -312,6 +380,10 @@ require_once(dirname(__DIR__).'/init.php');
                         $setMethod = $args[0];
                         unset($args[0]);
                         $args = (new Utils())->extractParam($args);
+                        $args = array_filter(array: $args,callback: function($value, $key): bool{
+                            return $value!=='';
+                        },mode: ARRAY_FILTER_USE_BOTH);
+
                         $form->{$setMethod}(...$args);
                     }else
                         $form->{$args[0]}();
@@ -352,7 +424,7 @@ require_once(dirname(__DIR__).'/init.php');
         foreach($e as $txt){
             
             $s = explode(':',$txt);
-            $out.=$s[0].':'.$s[1].';';
+            $out .= "{$s[0]}:{$s[1]};";
         }
         $out=preg_replace('/;$/','',$out);
         return $out;
@@ -370,7 +442,7 @@ require_once(dirname(__DIR__).'/init.php');
         foreach($e as $txt){
             
             $s = explode(':',$txt);
-            $out.=$s[0].':'.$s[1].';';
+            $out .= "{$s[0]}:{$s[1]};";
         }
         $out=preg_replace('/;$/','',$out);
         return $out;
@@ -388,7 +460,7 @@ require_once(dirname(__DIR__).'/init.php');
         
         foreach($e as $txt){
             $s = explode(':',$txt);
-            $out.=$s[0].':'.$s[1].';';
+            $out .= "{$s[0]}:{$s[1]};";
         }
         $out=preg_replace('/;$/','',$out);
         return $out;
@@ -411,7 +483,7 @@ require_once(dirname(__DIR__).'/init.php');
         $out=preg_replace('/;$/','',$out);
         return $out;
     },
-    '%password=(name:(.+?));?(value:(.*?))?(class:(.*?))?(placeholder:(.*?))?(desc:(.*?))?(required:(true|false))?%'=>function($e){
+    '%password=(name:(.+?));?(value:(.*?))?(class:(.*?))?(placeholder:(.*?))?(desc:(.*?))?(required:(true|false))?(measure:(true|false))?%'=>function($e){
         $e = array_values(array_filter($e,function($e){
             return $e!==''&&preg_match('/.*?:.*?/',$e);
         }));

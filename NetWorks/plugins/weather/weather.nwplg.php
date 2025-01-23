@@ -8,6 +8,7 @@ class Weather extends Plugins{
         $this->plugin = 'weather';
         $this->active = false;
         $this->disable = false;
+        $this->start($this->active,$this->disable);
     }
     public function head(){
         if($this->isActive()){
@@ -33,7 +34,7 @@ class Weather extends Plugins{
     }
     public function footerJS():string {
         if($this->isActive()){
-            return '<script src="'.(new Web(NW_PLUGINS.NW_DS.$this->plugin.NW_DS.'js'.NW_DS.$this->plugin.'api.js'))->toAccessible().'"></script>';
+            return '<script src="'.(new Web(NW_PLUGINS.NW_DS.$this->plugin.NW_DS.'js'.NW_DS.$this->plugin.'api.min.js'))->toAccessible().'"></script>';
         }return '';
     }
 }

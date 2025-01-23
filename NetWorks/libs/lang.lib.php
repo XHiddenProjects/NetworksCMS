@@ -25,6 +25,9 @@
                     $this->country = $getLang[1];
                     $sql->close();
                 }
+            }else{
+                $this->lang = $lang;
+                $this->country = $country;
             }
 
             $this->langObj = json_decode(file_get_contents(dirname(__DIR__)."/languages/" . strtolower("{$this->lang}-{$this->country}") . ".json"), true);

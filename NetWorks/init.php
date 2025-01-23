@@ -3,12 +3,13 @@ namespace networks;
 
 use networks\Exception\FileHandlingException;
 use networks\libs\Lang;
+use networks\libs\Plugins;
 use SSQL;
 
-require_once('autoloader.php');
+require_once 'autoloader.php';
 
 $lang = new Lang();
-
+$sql = new SSQL();
 (!defined('NW_DS') ? define('NW_DS','/') : '');
 (!defined('NW_ROOT') ? define('NW_ROOT',dirname(__FILE__)) : '');
 (!defined('NW_TEMPLATES') ? define('NW_TEMPLATES',dirname(__FILE__).NW_DS.'template') : '');
@@ -20,16 +21,29 @@ $lang = new Lang();
 (!defined('NW_UPLOADS') ? define('NW_UPLOADS',dirname(__FILE__).NW_DS.'uploads') : '');
 (!defined('NW_SQL_CREDENTIALS') ? define('NW_SQL_CREDENTIALS',NW_ASSETS.NW_DS.'sql'.NW_DS.'credentials.json') : '');
 (!defined('NW_CHARSET') ? define('NW_CHARSET','UTF-8') : '');
-foreach(array_diff(scandir(NW_PLUGINS),['.','..']) as $plugins){
-    try{
-        if(file_exists(NW_PLUGINS.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php'))
-            require_once(NW_PLUGINS.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php');
-        else throw new FileHandlingException($lang->get('Errors','noFile'),'plugins'.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php');
-    }catch(FileHandlingException $e){
-        echo '<b>NetWorks File_Handling:</b> '.$e->getMessage().' <em>'.$e->getPath().'</em> on line '.$e->getLine();
-    }
-}
+(!defined('NW_LOGS') ? define('NW_LOGS',dirname(__FILE__).NW_DS.'logs') : '');
 
+if(!file_exists(NW_LOGS)) mkdir('logs');
+
+foreach(array_diff(scandir(NW_PLUGINS),['.','..']) as $plugins){
+    if(file_exists(NW_SQL_CREDENTIALS)){
+        $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+        if($sql->setCredential($cred['server'],$cred['user'],$cred['psw']))
+            $db = $sql->selectDB($cred['db']);
+        try{
+            if(file_exists(NW_PLUGINS.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php')){
+                require_once NW_PLUGINS.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php';
+                if(empty($db->selectData('plugins',['*'],"WHERE pluginName=\"{$plugins}\""))){
+                    (new $plugins());
+                }
+            }
+            else throw new FileHandlingException($lang->get('Errors','noFile'),'plugins'.NW_DS.$plugins.NW_DS.$plugins.'.nwplg.php');
+        }catch(FileHandlingException $e){
+            echo '<b>NetWorks File_Handling:</b> '.$e->getMessage().' <em>'.$e->getPath().'</em> on line '.$e->getLine();
+        }
+    }
+    
+}
 # Load non-loaded folders
 if(!file_exists(NW_DRAFTS)) mkdir(NW_DRAFTS);
 if(!file_exists(NW_UPLOADS)) mkdir(NW_UPLOADS);

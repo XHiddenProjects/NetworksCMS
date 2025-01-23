@@ -15,8 +15,7 @@ class Plugins{
     protected String|null $plugin;
     protected String $placement;
     protected array $args;
-    protected bool $isInit=false;
-    protected bool $active=false;
+    protected bool $isInit=false, $active=false, $disable=false;
     protected bool $isSupported = false;
     /**
      * Create a plugin class
@@ -56,10 +55,10 @@ class Plugins{
             if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                 $db = $sql->selectDB($cred['db']);
                 if(!$db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\""))
-                    $db->addData('plugins',['pluginName','pluginStatus'], [$this->plugin,(int)$this->active]);
+                    $db->addData('plugins',['pluginName','pluginStatus','pluginDisabled'], [$this->plugin,(int)$this->active,(int)$this->disable]);
                 $this->isInit = true;
             }
-        }
+        }else $this->isInit = true;
         return $this;
     }
     /**
@@ -112,8 +111,10 @@ class Plugins{
                 $active = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\"");
             }
         }
-        if($active[0]['pluginStatus']) return true;
-        else return false;
+        if(isset($active[0])){
+            if($active[0]['pluginStatus']) return true;
+            else return false;
+        }else return $this->active;
     }
     public function isDisabled():bool{
         $disabled = false;
@@ -125,26 +126,48 @@ class Plugins{
                 $disabled = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\"");
             }
         }
-        if($disabled[0]['pluginDisabled']) return true;
-        else return false;
+        if(isset($disabled[0])){
+            if($disabled[0]['pluginDisabled']) return true;
+            else return false;
+        }else return $this->disable;
     }
     /**
      * Updates the active status
      * @param bool|null $forceStatus forces the status
      * @return bool TRUE if success updated, else FALSE
      */
-    public function update(bool|null $forceStatus=null): bool{
+    public function update(bool|null $forceStatus=null, bool $forceDisable=false): bool{
         if(file_exists(NW_SQL_CREDENTIALS)){
             $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
             $sql = new SSQL();
             if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                 $db = $sql->selectDB($cred['db']);
                 if($forceStatus==null){
-                    $a = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\" AND pluginDisabled=0");
-                    if($db->updateData('plugins',"pluginStatus=".($a ? 0 : 1), "pluginName=\"{$this->plugin}\""))
+                    $a = $db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\"");
+                    if($db->updateData('plugins',"pluginStatus=".($a[0]['pluginStatus'] ? 0 : 1).', pluginDisabled='.($a[0]['pluginDisabled'] ? 0 : 1), "pluginName=\"{$this->plugin}\""))
                         return true;
                 }else{
-                    if($db->updateData('plugins',"pluginStatus=".($forceStatus ? 1 : 0), "pluginName=\"{$this->plugin}\""))
+                    if($db->updateData('plugins',"pluginStatus=".($forceStatus ? 1 : 0).', pluginDisabled='.($forceDisable ? 1 : 0), "pluginName=\"{$this->plugin}\""))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * Initializes the plugin
+     * @param bool $forceStatus Plugin activation status
+     * @param bool $forceDisable Plugin disable status
+     * @return bool Confirms if it successfully started
+     */
+    public function start(bool $forceStatus, bool $forceDisable): bool{
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            $sql = new SSQL();
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                if($db->selectData('plugins',['*'],"WHERE pluginName=\"{$this->plugin}\" AND pluginInit=0")){
+                    if($db->updateData('plugins',"pluginStatus=".((int)$forceStatus).', pluginDisabled='.((int)$forceDisable).', pluginInit=1', "pluginName=\"{$this->plugin}\""))
                         return true;
                 }
             }
@@ -177,5 +200,18 @@ class Plugins{
             return null;
         }
     }
+
+    public function createConfig(string $table, array $items, array $types, array $values, array $options): void{
+        $sql = new SSQL();
+        if(file_exists(NW_SQL_CREDENTIALS)){
+            $cred = json_decode(file_get_contents(NW_SQL_CREDENTIALS),true);
+            if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
+                $db = $sql->selectDB($cred['db']);
+                $db->makeTable($table,$items,$types,$values,$options);
+            }
+            $sql->close();
+        }
+    }
+
 }
 ?>

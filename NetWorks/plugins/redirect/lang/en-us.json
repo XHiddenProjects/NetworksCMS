@@ -1,0 +1,12 @@
+{
+    "name": "Redirect",
+    "description": "Warns the user where the URL is being headed to",
+    "author": "XHiddenProjects",
+    "lastUpdated": "2025-01-09 13:20",
+    "version":"0.0.1",
+    "support": ["1.0.0"],
+    "website": "https://github.com/XHiddenProjects/NetWorks/",
+    "contributors": [],
+    "redirectWarnTitle": "Warning: you're leaving the site",
+    "redirectWarnMsg": "You are heading to this site:"
+}

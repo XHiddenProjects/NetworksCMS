@@ -89,8 +89,6 @@ RewriteCond %{HTTP_USER_AGENT} ^Xaldon\ WebSpider [OR]
 RewriteCond %{HTTP_USER_AGENT} ^Zeus
 RewriteRule ^.* - [F,L]
 
-# Change default directory page
-DirectoryIndex index.php
 
 # Prevent viewing of .htaccess file
 <Files .htaccess>
@@ -116,3 +114,10 @@ ErrorDocument 500 //NetWorks/errors/500.php
 # Redirects
 RewriteRule ^auth/(.*)$ auth.php/$1 [L]
 RewriteRule ^dashboard/(.*)$ dashboard.php/$1 [L]
+RewriteRule ^api/(.*)$ api.php/$1 [L]
+
+# Limit upload size
+LimitRequestBody 10240000
+
+# Turn ETags Off
+FileETag None

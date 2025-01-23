@@ -60,6 +60,7 @@ $(document).ready(()=>{
             }
         });
     }
+    const [forums, replies, topics] = [countForums(), countReplies(), countTopics()]
     if(document.querySelector('#nw_posts')){
         new Chart(document.querySelector('#nw_posts'), {
             type: 'doughnut',
@@ -71,7 +72,7 @@ $(document).ready(()=>{
                 ],
                 datasets: [{
                     label: 'My First Dataset',
-                    data: [countForums(), countReplies(), countTopics()],
+                    data: [forums,replies, topics],
                     backgroundColor: random(RGB,0,3,true),
                     hoverOffset: 4
                 }]
@@ -80,7 +81,7 @@ $(document).ready(()=>{
                 responsive: true,
                 plugins:{
                     DoughnutText: {
-                        text: `${MLMath.format.fixed(MLMath.stats.mean(countForums(),countReplies(),countTopics()),2)}%`,
+                        text: `${MLMath.format.fixed(MLMath.stats.mean(forums,replies, topics),2)}%`,
                         color: random(RGB,0,1,false)
                     }
                 }

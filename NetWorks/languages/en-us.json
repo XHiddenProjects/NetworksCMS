@@ -24,6 +24,11 @@
         "apiNotFound": "API not found",
         "noPluginSupportObj": " must have a support object"
     },
+    "pswStats":{
+        "weak":"Weak",
+        "ok": "Ok",
+        "good": "Good"
+    },
     "DocumentError":{
         "400": "Bad Request",
         "401": "Unauthorized",
@@ -69,20 +74,28 @@
         "login":"Login",
         "back": "Back",
         "logout": "Logout",
-        "submit": "Submit"
+        "submit": "Submit",
+        "delete": "Delete",
+        "close": "Close",
+        "continue":"Continue"
     },
     "Dashboard":{
         "title":"Dashboard",
         "config":{
-            "title":"Configuration"
+            "title":"Configuration",
+            "abbr":"Config"
         },
         "profile":{
             "title":"Profile"
         },
         "plugins":{
             "title": "Plugins",
-            "lastUpdated": "Last Updated"
-        }
+            "lastUpdated": "Last Updated",
+            "delete": "Plugin Deletion",
+            "deleteDesc": "Do you wish to delete this plugin? This cannot be undone."
+        },
+        "memory": "Memory",
+        "storage": "Storage"
     },
     "Posts":{
         "forum":"Forum",

@@ -21,6 +21,7 @@ if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                     if(preg_match('/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/',$_REQUEST['psw'])){
                         if($_REQUEST['psw']===$_REQUEST['cpsw']){
                             if($user->add($_REQUEST['username'],$_REQUEST['email'],$_REQUEST['psw'],$_REQUEST['fname'],$_REQUEST['mint'],$_REQUEST['lname'],$_REQUEST['perm'])){
+                                $db = $sql->selectDB($cred['db']);
                                 $db->addData('logger',['eventType','ip','eventDescription','eventStatus'], ['signup',(new Users())->IP()['ip'],htmlentities($_REQUEST['username']),'success']);
                                 echo json_encode(['success'=>true],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
                             } else {
@@ -31,7 +32,6 @@ if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                         echo json_encode(['err'=>(new Lang())->get('Errors','passwordRequirements')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
                 }else 
                     echo json_encode(['err'=>(new Lang())->get('Errors','usernameOrEmailExists')],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-                $sql->close();
             }
             elseif(strtolower($_REQUEST['action'])==='get'){
                 switch(strtolower($_REQUEST['type'])){
@@ -74,9 +74,11 @@ if($sql->setCredential($cred['server'],$cred['user'],$cred['psw'])){
                         echo json_encode(['success'=>1],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
                 }else{
                     $selectAll = $db->selectData('users',['username']);
-                    foreach($selectAll as $user){
-                        if(!(new Users())->isOnline($user['username'])){
-                            if($db->updateData('users','isOnline="0"','username="'.$user['username'].'"'));
+                    if(is_array($selectAll)){
+                        foreach($selectAll as $user){
+                            if(!(new Users())->isOnline($user['username'])){
+                                if($db->updateData('users','isOnline="0"','username="'.$user['username'].'"'));
+                            }
                         }
                     }
                 }

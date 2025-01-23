@@ -43,7 +43,7 @@ class HTMLForm{
      * @return string fixed newlines
      */
     public function transNL(string $txt):string{
-        return preg_replace('/\n{3,}/', "\n\n", str_replace(array("\r\n", "\r"), "\n", $txt));
+        return preg_replace('/\n{3,}/', "\n\n", str_replace(["\r\n", "\r"], "\n", $txt));
     }
     /**
      * Adds a row
@@ -91,9 +91,9 @@ class HTMLForm{
      * @return HTMLForm
      */
     public function text(string $name, string $value='', string $class='', string $placeholder='', string $desc='', bool $required=false):HTMLForm{
-        $value = $value!=='' ? ' value="'.$value.'"' : '';
-        $placeholder = $placeholder!=='' ? ' placeholder="'.$placeholder.'"' : '';
-        $class = ' class="form-control'.($class!=='' ? ' '.$class : '').'"';
+        $value ??= '';
+        $placeholder = $placeholder !== '' ? " placeholder=\"{$placeholder}\"" : '';
+        $class = " class=\"form-control" . ($class !== '' ? " $class" : "") . "\"";
         $this->elements[$this->rowIndex][$this->colsIndex] = '<label class="form-label" for="'.$name.'">'.($required ? '<i class="fa-solid fa-asterisk" style="color: #ff0000;"></i> ' : '').(new Lang($this->lang[0],$this->lang[1]))->get('Inputs',str_replace('name=','',$name)).'</label>
             <div class="input-group">
                 <input name="'.$name.'" id="'.$name.'" type="text"'.$class.$value.$placeholder.($required ? ' required' : '').'/>
@@ -109,7 +109,7 @@ class HTMLForm{
      * @param integer $max Maximum number
      * @param integer $value Set number
      * @param string $class Inputs' class
-     * @param string $placeholder Inputs password
+     * @param string $placeholder Inputs placeholder
      * @param string $desc Description
      * @param bool $required Requires the element
      * @return HTMLForm
@@ -117,9 +117,9 @@ class HTMLForm{
     public function number(string $name, int $min=0, int $max=5, int $value=0, string $class='', string $placeholder='', string $desc='', bool $required=false):HTMLForm{
         if($min>=$max)
             throw new NumberHandlingException((new Lang($this->lang[0],$this->lang[1]))->get('Errors','MinMaxError'));
-        $value = $value!=='' ? ' value="'.$value.'"' : '';
-        $placeholder = $placeholder!=='' ? ' placeholder="'.$placeholder.'"' : '';
-        $class = ' class="form-control'.($class!=='' ? ' '.$class : '').'"';
+        $value = $value !== '' ? " value=\"{$value}\"" : '';
+        $placeholder = $placeholder !== '' ? " placeholder=\"{$placeholder}\"" : '';
+        $class = " class=\"form-control" . ($class !== '' ? " $class" : "") . "\"";
         $this->elements[$this->rowIndex][$this->colsIndex] = '<label class="form-label" for="'.$name.'">'.($required ? '<i class="fa-solid fa-asterisk" style="color: #ff0000;"></i> ' : '').(new Lang($this->lang[0],$this->lang[1]))->get('Inputs',str_replace('name=','',$name)).'</label>
             <div class="input-group">
                 <input name="'.$name.'" id="'.$name.'" type="number" min="'.$min.'" max="'.$max.'"'.$class.$value.$placeholder.($required ? ' required' : '').'/>
@@ -186,9 +186,10 @@ class HTMLForm{
      * @param string $placeholder Inputs password
      * @param string $desc Description
      * @param bool $required Requires the input
+     * @param bool $measure Display a password strength measure
      * @return HTMLForm
      */
-    public function password(string $name, string $value='', string $class='', string $placeholder='', string $desc='', bool $required=false):HTMLForm{
+    public function password(string $name, string $value='', string $class='', string $placeholder='', string $desc='', bool $required=false, bool $measure=false):HTMLForm{
         $value = $value!=='' ? ' value="'.$value.'"' : '';
         $placeholder = $placeholder!=='' ? ' placeholder="'.$placeholder.'"' : '';
         $class = ' class="form-control'.($class!=='' ? ' '.$class : '').'"';
@@ -196,7 +197,13 @@ class HTMLForm{
             <div class="input-group">
                 <div class="psw_container">
                     <input name="'.$name.'" id="'.$name.'" type="password"'.$class.$value.$placeholder.($required ? ' required' : '').'/>
-                    <i class="fa-solid fa-eye showPsw"></i>
+                    <i class="material-symbols-rounded showPsw">visibility</i>
+                    '.($measure ? '<div class="psw-measure mt-2">
+                    <div class="progress" role="progressbar" aria-label="psw-measure" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <p class="psw-strength-txt"></p>
+                    </div>' : '').'
                 </div>
             </div>
             <span class="form-text">'.(new Lang($this->lang[0],$this->lang[1]))->get(implode(',',explode(',',$desc))).'</span>';
@@ -209,18 +216,16 @@ class HTMLForm{
      * @param string $name Inputs name
      * @param string $value Inputs value
      * @param string $class Inputs class
-     * @param string $placeholder Inputs password
      * @param string $desc Description
      * @param bool $required Requires the input
      * @return HTMLForm
      */
-    public function file(string $name, string $value='', string $class='', string $placeholder='', string $desc='', bool $required=false):HTMLForm{
+    public function file(string $name, string $value='', string $class='', string $desc='', bool $required=false):HTMLForm{
         $value = $value!=='' ? ' value="'.$value.'"' : '';
-        $placeholder = $placeholder!=='' ? ' placeholder="'.$placeholder.'"' : '';
         $class = ' class="form-control'.($class!=='' ? ' '.$class : '').'"';
         $this->elements[$this->rowIndex][$this->colsIndex] = '<label class="form-label" for="'.$name.'">'.($required ? '<i class="fa-solid fa-asterisk" style="color: #ff0000;"></i> ' : '').(new Lang($this->lang[0],$this->lang[1]))->get('Inputs',str_replace('name=','',$name)).'</label>
             <div class="input-group">
-                <input'.($required ? ' required': '').' name="'.$name.'" id="'.$name.'" type="file"'.$class.$value.$placeholder.'/>
+                <input'.($required ? ' required': '').' name="'.$name.'" id="'.$name.'" type="file"'.$class.$value.'/>
             </div>
             <span class="form-text">'.(new Lang($this->lang[0],$this->lang[1]))->get(implode(',',explode(',',$desc))).'</span>';
         return $this;
@@ -231,7 +236,7 @@ class HTMLForm{
      * @param string $name Inputs name
      * @param string $value Inputs value
      * @param string $class Inputs class
-     * @param string $placeholder Inputs password
+     * @param string $placeholder Inputs placeholder
      * @param string $desc Description
      * @param bool $require requires the input
      * @return HTMLForm
@@ -257,8 +262,8 @@ class HTMLForm{
      * @param string $link Buttons link
      * @return HTMLForm
      */
-    public function button(string $name, string $type='button', string $class='', string $link=''):HTMLForm{
-        $this->elements[$this->rowIndex][$this->colsIndex] = '<button'.($link!=='' ? ' btn-link="'.$link.'"' : '').' name="'.$name.'" id="'.$name.'" type="'.$type.'" class="btn'.($class!=='' ? ' '.$class : '').'">'.((new Lang($this->lang[0],$this->lang[1]))->get('Buttons',str_replace('name=','',$name))).'</button>';
+    public function button(string $name, string $type='button', string $class='', string $link='', bool $disabled=false):HTMLForm{
+        $this->elements[$this->rowIndex][$this->colsIndex] = "<button" . ($link !== '' ? " btn-link=\"{$link}\"" : "") . " name=\"{$name}\" id=\"{$name}\" type=\"{$type}\" class=\"btn" . ($class !== '' ? " {$class}" : "") . "\" ".($disabled ? 'disabled="true"' : '').">" . (new Lang($this->lang[0], $this->lang[1]))->get('Buttons', str_replace('name=', '', $name)) . "</button>";
         return $this;
     }
     /**
@@ -302,8 +307,8 @@ class HTMLForm{
      * @return string Finalized form
      */
     public function finalize(string $method='post', string $action='', string $enctype='', string $class=''):string{
-        $out = '<form'.($class!=='' ? ' class="'.$class.'"' : '').' method="'.$method.'"'.($action!=='' ? ' action="'.$action.'"' : '').($enctype!=='' ? ' enctype="'.$enctype.'"' : '').' novalidate>';
-        $out.='<div class="text-bg-danger w-100 p-3 rounded text-center fs-2 d-none" class="form_error">
+        $out = "<form" . ($class !== '' ? " class=\"{$class}\"" : "") . " method=\"{$method}\"" . ($action !== '' ? " action=\"{$action}\"" : "") . ($enctype !== '' ? " enctype=\"{$enctype}\"" : "") . " novalidate>";
+        $out .= '<div class="text-bg-danger w-100 p-3 rounded text-center fs-2 d-none" class="form_error">
             <i class="fa-solid fa-triangle-exclamation"></i> <span class="errmsg"></span>
         </div>';
         $index = [0,0];

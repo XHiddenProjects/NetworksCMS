@@ -3,16 +3,21 @@
     cursor: pointer;
 }
 .dropdown-toggle::after{
-    content: '\f0d7';
-    font-family: var(--fa-style-family-classic);
+    content: '\e5c5';
+    font-family: 'Material Symbols Rounded';
     font-weight: 900;
     border:0;
-    vertical-align: baseline;
+    vertical-align: middle;
+    font-size: 28px;
+    margin-left: 0;
 }
 .dropdown.show .dropdown-toggle::after{
-    content: '\f0d8';
-    font-family: var(--fa-style-family-classic);
+    content: '\e5c7';
+    font-family: 'Material Symbols Rounded';
     font-weight: 900;
+    font-size: 28px;
+    vertical-align: middle;
+    margin-left: 0;
 }
 .nw_grid_icon{
     width: 38px;
@@ -31,4 +36,15 @@
 .dropdown-menu{
     margin-top: 0!important;
     width: auto;
+}
+.pluginToggle{
+    cursor: pointer;
+}
+.plugin-container{
+    width: 100%;
+    align-items: center;
+}
+.plugin-container .col{
+    flex: 0 0 0%;
+    margin: 3px 0;
 }

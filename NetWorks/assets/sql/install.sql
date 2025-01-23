@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(254) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE users (
     public_key VARCHAR(300) NOT NULL DEFAULT ''
 );
 
-CREATE TABLE pages (
+CREATE TABLE IF NOT EXISTS pages (
     pageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     pageName VARCHAR(100) NOT NULL UNIQUE,
     pageIcon VARCHAR(150) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE pages (
     pageEdited TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE forums (
+CREATE TABLE IF NOT EXISTS forums (
     forumID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     forumName VARCHAR(70) NOT NULL UNIQUE,
     forumAuthor VARCHAR(50) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE forums (
     forumIcon VARCHAR(150) NULL DEFAULT ''
 );
 
-CREATE TABLE topics (
+CREATE TABLE IF NOT EXISTS topics (
     topicID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     topicName VARCHAR(120) NOT NULL UNIQUE,
     topicAuthor VARCHAR(50) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE topics (
     FOREIGN KEY (forumID) REFERENCES forums(forumID) ON DELETE CASCADE
 );
 
-CREATE TABLE replies (
+CREATE TABLE IF NOT EXISTS replies (
     replyID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     replyAuthor VARCHAR(50) NOT NULL,
     replyMsg TEXT NOT NULL,
@@ -55,22 +55,24 @@ CREATE TABLE replies (
     FOREIGN KEY (topicID) REFERENCES topics(topicID) ON DELETE CASCADE
 );
 
-CREATE TABLE logger(
+CREATE TABLE IF NOT EXISTS logger(
     eventID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     eventType VARCHAR(150) NOT NULL,
+    ip VARCHAR(100) NOT NULL,
     eventDescription TEXT NOT NULL,
     eventStatus ENUM('success', 'failure') NOT NULL,
     eventTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE plugins (
+CREATE TABLE IF NOT EXISTS plugins (
     pluginID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     pluginName VARCHAR(100) NOT NULL UNIQUE,
     pluginStatus TINYINT(1) DEFAULT 0,
-    pluginDisable TINYINT(1) DEFAULT 0
+    pluginDisabled TINYINT(1) DEFAULT 0,
+    pluginInit TINYINT(1) DEFAULT 0
 );
 
-CREATE TABLE config (
+CREATE TABLE IF NOT EXISTS config(
     configID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL DEFAULT 'NetWorks',
     lang VARCHAR(60) NOT NULL DEFAULT 'en-us',
@@ -96,13 +98,13 @@ CREATE TABLE config (
     rating VARCHAR(45) DEFAULT NULL,
     copyright VARCHAR(50) DEFAULT NULL,
     distribute VARCHAR(55) DEFAULT 'global',
-    revist INT DEFAULT 7,
+    revisit INT DEFAULT 7,
     charset VARCHAR(120) NOT NULL DEFAULT 'UTF-8',
     timezone VARCHAR(150) NOT NULL DEFAULT 'Europe/Berlin',
     secure VARCHAR(10) NOT NULL DEFAULT 'moderate'
 );
 
-CREATE TABLE recaptcha(
+CREATE TABLE IF NOT EXISTS recaptcha(
     reCAPTCHA_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     reCAPTCHA_active TINYINT(1) DEFAULT 0,
     reCAPTCHA_version VARCHAR(2) NOT NULL,
@@ -111,7 +113,7 @@ CREATE TABLE recaptcha(
     reCAPTCHA_secretKey TEXT NOT NULL
 );
 
-CREATE TABLE mail (
+CREATE TABLE IF NOT EXISTS mail (
     mailID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mail_from VARCHAR(256) NOT NULL,
     mail_to VARCHAR(256) NOT NULL,
@@ -122,7 +124,7 @@ CREATE TABLE mail (
     UNIQUE (mail_from, mail_subject)
 );
 
-CREATE TABLE mail_replies (
+CREATE TABLE IF NOT EXISTS mail_replies (
     mail_replyID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mail_subject VARCHAR(200) NOT NULL,
     mail_from VARCHAR(256) NOT NULL,
@@ -131,7 +133,7 @@ CREATE TABLE mail_replies (
     UNIQUE (mail_from, mail_subject)
 );
 
-CREATE TABLE mail_forward (
+CREATE TABLE IF NOT EXISTS mail_forward (
     mail_forwardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mail_subject VARCHAR(200) NOT NULL,
     mail_from VARCHAR(256) NOT NULL,

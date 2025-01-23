@@ -21,7 +21,7 @@ var toRelPath = ()=>{
 let lang=null, dict=null;
 (new Request(`${toRelPath()}assets/php/config.php?type=config&value=lang`)).send().onSuccess((d)=>{
     d = JSON.parse(d);
-    lang = d['success'];
+    lang = d['success'] ?? 'en-us';
 });
 
 (new Request(`${toRelPath()}languages/${lang}.json`)).send().onSuccess((d)=>{

@@ -146,6 +146,20 @@ class SSQL{
 		}
 		}
 	}
+	/**
+	 * Alters table
+	 * @param string $tbname Table name
+	 * @param string $method Method to alter
+	 * @return bool
+	 */
+	public function alterTable(string $tbname, string $method): bool{
+		$sql = 'ALTER TABLE '.strtolower($tbname).' '.$method;
+		if($this->conn->query($sql)===TRUE){
+			return true;
+		}else{
+			die('Error: '.$this->conn->error);
+		}
+	}
 	public function dropTable(string $tbname) : bool{
 		$sql = 'DROP TABLE '.strtolower($tbname);
 		if($this->conn->query($sql)===TRUE){
