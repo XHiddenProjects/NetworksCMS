@@ -4,3 +4,4 @@ NetWorks is a CMS and a forum script that allows you to build your website bette
 * Drag-drop web elements
 * File/Security management
 * Plugins/Themes editor
+* Fast-loading pages
