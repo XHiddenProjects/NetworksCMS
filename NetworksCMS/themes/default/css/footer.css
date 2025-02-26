@@ -1,0 +1,21 @@
+@import url('reset.css');
+footer,
+footer.fixed{
+    background-color: var(--footer-bg);
+    width: 100%;
+}
+footer.footer-fixed{
+    position: fixed;
+    bottom: 0;
+}
+footer{
+    position: relative;
+}
+footer p{
+    padding: 1rem;
+}
+footer .foot{
+    text-align: center;
+    margin: 0;
+    background-color: var(--footer-foot-bg);
+}

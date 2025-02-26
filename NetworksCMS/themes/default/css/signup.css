@@ -1,0 +1,20 @@
+@import url('./reset.css');
+.signup-form{
+    max-height: 100%;
+    padding: .25rem;
+}
+.signup-form h1{
+    text-align: center;
+    font-size: 2.5em;
+}
+.signup-form > .row > .col:first-child{
+    border-right: 3px solid #000;
+}
+.signup-form > .row > .col:last-child{
+    border-left: 3px solid #000;
+}
+.signup-form form{
+    height: 100%;
+    padding: 3px;
+    overflow-x: hidden;
+}

@@ -1,0 +1,18 @@
+@import url('reset.css');
+.installation{
+    margin: auto;
+    display: block;
+    width: 75%;
+    height: calc(100% - 30px);
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    background-color: var(--install-bg);
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 24px 0 20px var(--install-shadow);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,78 @@
+<div class="container-fluid signup-form">
+    <div class="row">
+        <div class="col">
+            <h1><lang>signup</lang></h1>
+            <isURLQuery target="user_exists">
+                <div class="text-bg-danger p-1 rounded my-1">
+                    <i class="material-symbols-rounded">error</i> <lang>usernameExists</lang>
+                </div>
+            </isURLQuery>
+            <isURLQuery target="err_token">
+                <div class="text-bg-danger p-1 rounded my-1">
+                    <i class="material-symbols-rounded">error</i> <lang>tokenExpired</lang>
+                </div>
+            </isURLQuery>
+            <nwform method="post" class="signup-nwform">
+                <div class="row">
+                    <div class="col">
+                        <text name="fname" required="true"></text>
+                        <div class="invalid-msg"><lang>requiredFname</lang></div>
+                    </div>
+                    <div class="col">
+                        <text name="mname"></text>
+                    </div>
+                    <div class="col">
+                        <text name="lname" required="true"></text>
+                        <div class="invalid-msg"><lang>requiredLname</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <text name="username" required="true" icon="person"></text>
+                        <div class="invalid-msg"><lang>requiredUsername</lang></div>
+                    </div>
+                    <div class="col">
+                        <text type="email" name="email" required="true" icon="mail"></text>
+                        <div class="invalid-msg"><lang>requiredEmail</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <password name="password" required="true" icon="key" checklist="true"></password>
+                        <div class="invalid-msg"><lang>requiredPsw</lang></div>
+                    </div>
+                    <div class="col">
+                        <password name="confirm_password" required="true" icon="key"></password>
+                        <div class="invalid-msg"><lang>requiredConfirmPsw</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <checkbox name="TermsAndConditions" required="true"></checkbox>
+                        <div class="invalid-msg"><lang>errIsRequired</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <checkbox name="PrivacyPolicy" required="true"></checkbox>
+                        <div class="invalid-msg"><lang>errIsRequired</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button name="signup" class="btn btn-success w-100 mt-2" button="submit"></button>
+                    </div>
+                    <div class="col">
+                        <button name="login" class="btn btn-secondary w-100 mt-2" link="{{ROOT}}/auth/login"></button>
+                    </div>
+                    <div class="col">
+                        <button name="home" class="btn btn-primary w-100 mt-2" link="{{ROOT}}"></button>
+                    </div>
+                </div>
+            </nwform>
+        </div>
+        <div class="col">
+            <h1><lang>MediaSignup</lang></h1>
+        </div>
+    </div>
+</div>

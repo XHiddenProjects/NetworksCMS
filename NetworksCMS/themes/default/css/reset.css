@@ -1,0 +1,143 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -ms-touch-select: none;
+    -webkit-user-select: none;
+}
+:root,
+:host{
+    --install-bg: rgba(207, 207, 207,.8);
+    --install-shadow: rgb(70 68 68 / 60%);
+    --footer-bg: rgb(219, 219, 219,0.5);
+    --footer-foot-bg: rgb(219,219,219);
+    --option-or-bg: rgba(231, 231, 231, 0.65);
+    /*Body*/
+    --body-bg: rgb(255,255,255);
+    --body-bg-gradient-moz: -moz-radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(196,196,196,1) 50%, rgba(219,219,219,1) 100%);
+    --body-bg-gradient-webkit: -webkit-radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(196,196,196,1) 50%, rgba(219,219,219,1) 100%);
+    --body-bg-gradient: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(196,196,196,1) 50%, rgba(219,219,219,1) 100%);
+    --body-bg-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#dbdbdb",GradientType=1);
+    --body-color: #000;
+    --body-font: 'Times New Roman', serif;
+}
+html,body{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+body{
+    background: var(--body-bg);
+    background: var(--body-bg-gradient-moz);
+    background: var(--body-bg-gradient-webkit);
+    background: var(--body-bg-gradient);
+    filter: var(--body-bg-filter);
+    color: var(--body-color);
+    font-family: var(--body-font);
+}
+
+span[class^='material-symbols-'],
+i[class^='material-symbols-']{
+    position: relative;
+    top: calc(0px + 11px);
+    left: 2px;
+    vertical-align: middle;
+    transform: translateY(-50%);
+}
+.nav-link [class^='material-symbols-']{
+    font-size: 18px;
+}
+.form-select{
+    background-image: url("https://cdn-icons-png.flaticon.com/512/25/25243.png");
+    background-repeat: no-repeat;
+}
+.form-select.opened{
+    background-image: url("https://cdn-icons-png.flaticon.com/512/25/25678.png");
+}
+
+/*Password*/
+.psw-container{
+    position: relative;
+}
+.psw-container .toggle-psw-visible{
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/*Form error*/
+.invalid-msg{
+    color: var(--bs-white) !important;
+    background-color: RGBA(var(--bs-danger-rgb), var(--bs-bg-opacity, 1)) !important;
+    border-radius: var(--bs-border-radius);
+    margin: .25rem 0;
+    padding: .25rem;
+    align-items: center;
+    display: none;
+}
+.invalid-msg:after{
+    font-family: 'Material Symbols Rounded';
+    content: '\e000';
+    margin-left: 5px;
+}
+/*loader*/
+.nw-loader {
+    color: #ffffff;
+    font-size: inherit;
+    text-indent: -9999em;
+    overflow: hidden;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    position: relative;
+    transform: translateZ(0);
+    animation: mltShdSpin 1.7s infinite ease, round 1.7s infinite ease;
+    display: inline-block;
+    margin: 8px auto;
+    vertical-align: middle;
+}
+
+@keyframes mltShdSpin {
+    0% {
+        box-shadow: 0 -0.83em 0 -0.4em,
+        0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em,
+        0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+    5%,
+    95% {
+        box-shadow: 0 -0.83em 0 -0.4em, 
+        0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 
+        0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+    10%,
+    59% {
+        box-shadow: 0 -0.83em 0 -0.4em, 
+        -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, 
+        -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+    }
+    20% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em,
+        -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, 
+        -0.749em -0.34em 0 -0.477em;
+    }
+    38% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em,
+        -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, 
+        -0.82em -0.09em 0 -0.477em;
+    }
+    100% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 
+        0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+}
+@keyframes round {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg) }
+}
