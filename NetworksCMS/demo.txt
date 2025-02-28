@@ -1,3 +1,0 @@
-Username: Demo
-Email: demo@networks.com
-Password: Demo123!
