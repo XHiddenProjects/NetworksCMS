@@ -10,6 +10,11 @@ class Database{
     public const ASSOC = SQLITE3_ASSOC;
     public const NUM = SQLITE3_NUM;
     public const BOTH = SQLITE3_BOTH;
+    public const SELECT_ALL = '*';
+    public const INT = SQLITE3_INTEGER;
+    public const FLOAT = SQLITE3_FLOAT;
+    public const TEXT = SQLITE3_TEXT;
+    public const NULL = SQLITE3_NULL;
     protected string|null $table=null;
     /**
      * Creates a database
@@ -95,14 +100,22 @@ class Database{
      * @param string|array $selector Select specific information. Use __*__ to select all
      * @param string $conditions Conditions to simplify the search. **DO NOT INCLUDE "WHERE"**
      * @param int $mode Controls how the next row will be returned to the caller. This value must be one of either
+     * @param bool $ignoreAuto Ignores the select all array from selecting index 1 by default if array is only 1 item inside
      * @return bool|array The results of the selected query
      */
-    public function select(string|null $name=null, string|array $selector='*' ,string $conditions='', int $mode=Database::BOTH): array|bool{
+    public function select(string|null $name=null, string|array $selector='*' ,string $conditions='', int $mode=Database::BOTH, bool $ignoreAuto=false): array|bool{
         global $lang;
         $name = $this->table??$name;
         if(!$name) die($lang['noTableSelected']);
         $sql = "SELECT ".(is_array(value: $selector) ? implode(separator: ',',array: $selector) : $selector)." FROM $name".($conditions ? " WHERE $conditions" : "");
-        return $this->db->query(query: $sql)->fetchArray(mode: $mode);
+        $query=$this->db->query(query: $sql);
+        if($selector===$this::SELECT_ALL){
+            $responses = [];
+            while($row = $query->fetchArray(mode: $this::ASSOC))
+                $responses[] = $row;
+            return count(value: $responses)==1 ? ($ignoreAuto ? $responses : $responses[0]) : $responses;
+        }else
+            return $query->fetchArray(mode: $mode);
     }
     /**
      * Inserts data into the table
@@ -123,7 +136,13 @@ class Database{
         },array: array_keys($data))).") VALUES (".implode(separator: ',',array: array_keys($temp)).")";
         $prep = $this->db->prepare(query: $sql);
         foreach($temp as $bind=>$value){
-            $prep->bindValue(param: $bind,value: $value);
+            $value = preg_replace(pattern: '/^\"|\"$/',replacement: '',subject: $value);
+            if(preg_match(pattern: '/^[+-]?[0-9]+$/',subject: $value))
+                $prep->bindValue(param: $bind, value: $value, type: $this::INT);
+            if(preg_match(pattern: '/^[+-]?([0-9]*[.])[0-9]+$/',subject: $value))
+                $prep->bindValue(param: $bind, value: $value, type: $this::FLOAT);
+            else
+                $prep->bindValue(param: $bind, value: $value, type: $this::TEXT);
         }
         return $prep->execute() ? true : false;
     }
@@ -183,7 +202,13 @@ class Database{
         $prep = $this->db->prepare(query: $sql);
         global $temp;
         foreach($temp as $bind=>$value){
-            $prep->bindValue(param: $bind, value: $value);
+            $value = preg_replace(pattern: '/^\"|\"$/',replacement: '',subject: $value);
+            if(preg_match(pattern: '/^[+-]?[0-9]+$/',subject: $value))
+                $prep->bindValue(param: $bind, value: $value, type: $this::INT);
+            if(preg_match(pattern: '/^[+-]?([0-9]*[.])?[0-9]+$/',subject: $value))
+                $prep->bindValue(param: $bind, value: $value, type: $this::FLOAT);
+            else
+                $prep->bindValue(param: $bind, value: $value, type: $this::TEXT);
         }
         return $prep->execute() ? true : false;
     }

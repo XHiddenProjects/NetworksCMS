@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <button class="border-0 btn bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#dashboardOffcanvas" aria-controls="dashboardOffcanvase"><i class="material-symbols-outlined">menu</i></button>
+            </li>
+        </ul>
+        <button class="btn btn-danger logout"><lang>logout</lang></button>
+    </div>
+</nav>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="dashboardOffcanvas" aria-labelledby="dashboardOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="dashboardOffcanvas"><a href="{{ROOT}}" class="text-decoration-none link-dark"><lang>title|projectName</lang></a></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-group list-group-flush">
+            <a href="{{ROOT}}/dashboard"><li class="list-group-item list-group-item-action"><lang>dashboard</lang> <i class="material-symbols-outlined">dashboard</i></li></a>
+            <a href="{{ROOT}}/dashboard/profile"><li class="list-group-item list-group-item-action"><lang>profile</lang> <i class="material-symbols-outlined">manage_accounts</i></li></a>
+                <!-- <isAdmin>
+                    <a href="#" class="tab"><li class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#tab-security" aria-expanded="false" aria-controls="test">
+                        <lang>security</lang> <i class="material-symbols-rounded">security</i>
+                        <div class="collapse tab-security" id="tab-security">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item list-group-item-action"></li>
+                        </ul>
+                    </div>
+                </li></a>
+            </isAdmin> -->
+        </ul>
+    </div>
+</div>

@@ -70,16 +70,17 @@ class Utils{
         $mail = new PHPMailer(exceptions: true);
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
         $mailDB = $db->selectTable(name: 'mail');
+        $failedSend = true;
         try{
             global $lang;
             $mail->SMTPDebug = true;
             $mail->isSMTP();
-            $mail->Host = $mailDB->select(name: null,selector: 'host');
-            $mail->SMTPAuth = $mailDB->select(name: null,selector: 'SMTPAuth');
-            $mail->Username = $mailDB->select(name: null,selector: 'auth_username');
-            $mail->Password = $mailDB->select(name: null,selector: 'auth_psw');
-            $mail->SMTPSecure = $mailDB->select(name: null,selector: 'SMTPSecure');
-            $mail->Port = $mailDB->select(name: null,selector: 'port');
+            $mail->Host = $mailDB->select(selector: 'host');
+            $mail->SMTPAuth = $mailDB->select(selector: 'SMTPAuth');
+            $mail->Username = $mailDB->select(selector: 'auth_username');
+            $mail->Password = $mailDB->select(selector: 'auth_psw');
+            $mail->SMTPSecure = $mailDB->select(selector: 'SMTPSecure');
+            $mail->Port = $mailDB->select(selector: 'port');
             if(count(value: $from)>1||count(value: $from)==0) throw new Exception(message: $lang['errMailFrom']);
             else{
                 foreach($from as $email=>$name){
@@ -127,11 +128,10 @@ class Utils{
             $mail->AltBody = $altBody;
             $mail->send();
         }catch(Exception $e){
-            "Message could not be sent: {$e->errorMessage()}";
-            return false;
+            $failedSend = false;
         }
         $db->close();
-        return true;
+        return $failedSend;
     }
     /**
      * Generates an API key
@@ -139,7 +139,7 @@ class Utils{
      */
     public function generateAPI(): string{
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
-        $results = $db->selectTable(name: 'api')->select(name: null,selector: 'key',mode: Database::BOTH);
+        $results = $db->selectTable(name: 'api')->select(selector: 'key',mode: Database::BOTH);
         $api = implode(separator: '-', array: str_split(string: substr(string: strtolower(string: md5(string: microtime().rand(min: 1000, max: 9999))), offset: 0, length: 44), length: 8));
         if($results){
             foreach($results as $row){

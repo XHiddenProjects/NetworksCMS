@@ -1,6 +1,7 @@
 <?php
 
 use NetWorks\libs\Files;
+use NetWorks\libs\Database;
 include_once 'autoloader.php';
 $p = preg_split(pattern: '/\//',subject: dirname(path: __FILE__));
 $folder = end(array: $p);
@@ -23,6 +24,12 @@ $path = preg_replace(pattern: '/\/?/',replacement: '',subject: preg_replace(patt
 !defined(constant_name: 'CHARSET') ? define(constant_name: 'CHARSET',value: 'utf-8') : '';
 !defined(constant_name: 'NW_TEMPLATES') ? define(constant_name: 'NW_TEMPLATES',value: NW_ROOT.NW_DS.'templates') : '';
 
+if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db')){
+    $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
+    $tz = $db->selectTable(name: 'settings')->select();
+    date_default_timezone_set(timezoneId: $tz['timezone']);
+}else
+    date_default_timezone_set(timezoneId: 'America/New_York');
 # languages
 $f = new Files();
 foreach(array_diff(scandir(directory: dirname(path: __FILE__).'/languages'),['.','..'])  as $langs){

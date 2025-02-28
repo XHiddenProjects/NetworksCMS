@@ -1,4 +1,5 @@
 <?php
+include_once dirname(path: __DIR__).'/init.php';
 $lang = [
     'name'=>'English',
     'abbr' => 'en-us',
@@ -25,6 +26,13 @@ $lang = [
     'logout'=>'Logout',
     'dashboard'=>'Dashboard',
     'forum'=>'Forum',
+    'security'=>'Security',
+    'profile'=>'Profile',
+    #Date/Time
+    'date'=>'Date',
+    'time'=>'Time',
+    'datetime'=>'Datetime',
+    'timezone'=>'Timezone',
     # Information
     'fname'=>'First Name',
     'mname'=>'Middle Name',
@@ -33,8 +41,11 @@ $lang = [
     'username'=>'Username',
     'password'=>'Password',
     'confirm_password'=>'Confirm Password',
+    'loginAuth'=>'Username/Email',
+    'rememberMe'=>'Remember me',
     # Media
     'MediaSignup'=>'Sign up with:',
+    'MediaLogin'=>'Login in with:',
     # Errors
     'noTableSelected'=>'No Table was selected',
     'invalidFormMethod'=>'Invalid form method',
@@ -44,6 +55,7 @@ $lang = [
     'requiredUsername'=>'Enter Username',
     'requiredPsw'=>'Enter Password',
     'requiredConfirmPsw'=>'Confirm Password',
+    'requiredLoginAuth'=>'You must enter a username/email',
     'requiredEmail'=>'Enter email address',
     'errMailFrom'=>'From should only contain 1 account',
     'errMailTo'=>'From should have at least 1 email.',
@@ -51,11 +63,19 @@ $lang = [
     'errIsRequired'=>'This field is required',
     'usernameExists'=>'Username already exists',
     'tokenExpired'=>'Token expired',
+    'misMatchAuth'=>'Invalid credentials',
     # validations
     'psw_validation_8_chars'=>'Must contain 8+ characters',
     'psw_validation_uppercase'=>'Must contain a uppercase letter',
     'psw_validation_lowercase'=>'Must contain a lowercase letter',
     'psw_validation_numbers'=>'Must contain a number',
     'psw_validation_special_chars'=>'Must contain a special character',
+    # Email
+    'email_confirm_user_subject'=>'Confirmation user',
+    'email_confirm_user_body'=>'Thank you signing with us, please click the button below to confirm your account
+    <br/><br/>
+    <a href="'.NW_DOMAIN.'/confirm" style="text-decoration: none; padding:1.5rem; border-radius: 5px; background-color:rgb(18, 105, 181); color: #ffffff; display: inline-block;">Confirm Account</a>',
+    # Warnings
+    'noInstallChange'=>"Warning: You cannot change this after installation"
 ];
 ?>

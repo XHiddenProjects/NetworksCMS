@@ -38,10 +38,10 @@
         }
         /**
          * Formats data from table array
-         * @param array $selection Data selection
+         * @param array|bool $selection Data selection
          * @return array Returns formatted selection, empty if selection wasn't possible
          */
-        public function selFormat(array $selection):array{
+        public function selFormat(array|bool $selection):array{
             return is_array(value: $selection) ? $selection : [];
         }
     }

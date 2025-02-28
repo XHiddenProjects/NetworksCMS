@@ -2,6 +2,7 @@
 namespace NetWorks\libs;
 include_once 'BrowserDetection.php';
 use foroco\BrowserDetection;
+use NetWorks\libs\Database;
 class Users{
     protected BrowserDetection $device;
     public function __construct() {
@@ -58,6 +59,39 @@ class Users{
      */
     public function get():string|null{
         return $_SESSION['nw_user']??$_COOKIE['nw_user']??null;
+    }
+    /**
+     * Checks if the user is Admin
+     * @return bool TRUE if user is admin, else FALSE
+     */
+    public function isAdmin(): bool{
+        $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
+        $user = $this->get();
+        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"admin\"",mode:Database::ASSOC);
+        $db->close();
+        return is_array(value: $results)&&!empty($results) ? true : false;
+    }
+    /**
+     * Checks if the user is Moderator
+     * @return bool TRUE if user is moderator, else FALSE
+     */
+    public function isMod(): bool{
+        $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
+        $user = $this->get();
+        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"moderator\"",mode:Database::ASSOC);
+        $db->close();
+        return is_array(value: $results)&&!empty($results) ? true : false;
+    }
+    /**
+     * Checks if user is a Member
+     * @return bool TRUE if member, else FALSE
+     */
+    public function isMember(): bool{
+        $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
+        $user = $this->get();
+        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"member\"",mode:Database::ASSOC);
+        $db->close();
+        return is_array(value: $results)&&!empty($results) ? true : false;
     }
 }
 ?>

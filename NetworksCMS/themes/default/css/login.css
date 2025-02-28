@@ -1,17 +1,18 @@
 @import url('./reset.css');
-.signup-form{
+.login-form{
     max-height: 100%;
     padding: .25rem;
     display: flex;
     height: 100%;
     flex-direction: row;
     justify-content: space-between;
+    width: 100%;
 }
-.signup-form > .row{
+.login-form > .row{
     max-width: 50%;
     width: 100%;
 }
-.signup-form h1{
+.login-form h1{
     text-align: center;
     font-size: 2.5em;
 }

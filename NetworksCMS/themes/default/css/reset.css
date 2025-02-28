@@ -48,9 +48,6 @@ i[class^='material-symbols-']{
     vertical-align: middle;
     transform: translateY(-50%);
 }
-.nav-link [class^='material-symbols-']{
-    font-size: 18px;
-}
 .form-select{
     background-image: url("https://cdn-icons-png.flaticon.com/512/25/25243.png");
     background-repeat: no-repeat;

@@ -108,3 +108,12 @@ RewriteRule ^([^/]+)/?$ $1.php [L]
 </Files>
 # Add pretty URL for specific cases
 RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ $1.php/$2 [L]
+
+# Security Measures
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains" 
+    Header set Referrer-Policy "no-referrer"
+</IfModule>
+

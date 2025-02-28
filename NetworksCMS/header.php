@@ -8,7 +8,7 @@ include_once 'init.php';
 global $lang;
 $f = new Files();
 $plugins = new Plugins();
-if($f->exists(path: NW_DATABASE.NW_DS.'NetworksCMS')){
+if($f->exists(path: NW_DATABASE.NW_DS.'NetworksCMS.db')){
     $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
     $results = $db->selectTable(name: 'settings')->select(mode: Database::ASSOC);
     $db->close();
@@ -16,6 +16,7 @@ if($f->exists(path: NW_DATABASE.NW_DS.'NetworksCMS')){
 if(!$f->exists(path: 'installed.bin.key')&&!preg_match(pattern: '/install/',subject: NW_PATH)) header(header: 'Location: '.NW_DOMAIN.'/install');
 $end = NW_PATH_ARRAY;
 $title = preg_replace(pattern: '/\?.*$/',replacement: '',subject: strtolower(string: end(array: $end)??NW_PATH_ARRAY[0]));
+$title = in_array(needle: 'dashboard',haystack: NW_PATH_ARRAY) ? 'dashboard' : $title;
 if(!isset(NW_PATH_ARRAY[1])||empty(NW_PATH_ARRAY)) $title = 'home';
 $header = '<!DOCTYPE html>
 <html lang="'.$lang['abbr'].'">

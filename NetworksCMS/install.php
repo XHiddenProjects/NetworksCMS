@@ -47,6 +47,9 @@ $template = '
     <div class="col">
         '.$form->select(name: 'lang', options: $utils->getLang()).'
     </div>
+    <div class="col">
+        '.$form->select(name: 'timezone', options: timezone_identifiers_list(),default: 'America/New_York',desc: 'noInstallChange').'
+    </div>
 </div>
 <div class="row">
     <div class="col">

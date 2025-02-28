@@ -14,15 +14,15 @@ class Storage{
      * Sets a cookie
      * @param string $name Cookie's name
      * @param string $value Cookie's value
-     * @param int $time Cookies's expire time. **1 = 1 hour**
+     * @param int $time Cookies's expire time. **1 = 1 day**
      * @param string $path Cookie's path
      * @param string $domain Cookie's domain
      * @param bool $secure HTTPS only
-     * @param bool $httponly HTTP only
+     * @param bool $httpOnly HTTP only
      * @return bool TRUE if the cookie has been set, else FALSE
      */
-    public function setCookie(string $name,string $value,int $time, string $path='/', string $domain='', bool $secure=false, bool $httponly=true): bool{
-        return setcookie(name: $name,value: $value,expires_or_options: time()+3600*$time,path: $path, domain: $domain,secure:$secure,httponly: $httponly);
+    public function setCookie(string $name,string $value,int $time, string $path='/', string $domain='', bool $secure=false, bool $httpOnly=true): bool{
+        return setcookie(name: $name,value: $value,expires_or_options: time()+84600*$time,path: $path, domain: $domain,secure:$secure,httponly: $httpOnly);
     }
     /**
      * Returns the value of a cookie
@@ -39,6 +39,18 @@ class Storage{
      */
     public function checkCookie(string $name): bool{
         return isset($_COOKIE[$name]);
+    }
+    /**
+     * Deletes a cookie
+     * @param string $name Cookie's name
+     * @param string $path Cookie's path
+     * @param string $domain Cookie's domain
+     * @param bool $secure HTTPS only
+     * @param bool $httpOnly HTTP only
+     * @return bool TRUE if the cookie has been deleted, else FALSE
+     */
+    public function deleteCookie(string $name, string $path='/', string $domain='', bool $secure=false, bool $httpOnly=false): bool{
+        return setcookie(name: $name, value: '', expires_or_options: time() - 3600, path: $path, domain: $domain, secure: $secure, httponly: $httpOnly);
     }
     /**
      * Sets the sessions value
@@ -64,6 +76,14 @@ class Storage{
      */
     public function checkSession(string $name):bool{
         return isset($_SESSION[$name]);
+    }
+    /**
+     * Deletes a session
+     * @param string $name Sessions name
+     * @return void
+     */
+    public function deleteSession(string $name): void{
+        unset($_SESSION[$name]);
     }
 }
 ?>

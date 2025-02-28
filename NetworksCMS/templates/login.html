@@ -1,0 +1,52 @@
+<div class="container-fluid login-form">
+    <div class="row">
+        <div class="col">
+            <h1><lang>login</lang></h1>
+            <isURLQuery target="no_auth">
+                <div class="text-bg-danger p-1 rounded my-1">
+                    <i class="material-symbols-rounded">error</i> <lang>misMatchAuth</lang>
+                </div>
+            </isURLQuery>
+            <isURLQuery target="err_token">
+                <div class="text-bg-danger p-1 rounded my-1">
+                    <i class="material-symbols-rounded">error</i> <lang>tokenExpired</lang>
+                </div>
+            </isURLQuery>
+            <nwform method="post" class="login-nwform">
+                <div class="row">
+                    <div class="col">
+                        <text name="loginAuth" required="true" icon="person"></text>
+                        <div class="invalid-msg"><lang>requiredLoginAuth</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <password name="password" required="true" icon="key"></password>
+                        <div class="invalid-msg"><lang>requiredPsw</lang></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <checkbox name="rememberMe"></checkbox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button name="signup" class="btn btn-secondary w-100 mt-2" link="{{ROOT}}/auth/signup"></button>
+                    </div>
+                    <div class="col">
+                        <button name="login" class="btn btn-success w-100 mt-2" button="submit"></button>
+                    </div>
+                    <div class="col">
+                        <button name="home" class="btn btn-primary w-100 mt-2" link="{{ROOT}}"></button>
+                    </div>
+                </div>
+            </nwform>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h1><lang>MediaLogin</lang></h1>
+        </div>
+    </div>
+</div>

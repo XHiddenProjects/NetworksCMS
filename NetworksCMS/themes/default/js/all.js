@@ -8,6 +8,9 @@ $(document).ready(()=>{
             if((event.ctrlKey&&key===67)) event.preventDefault();
         });
     });
+    $('.tab').on('click',(e)=>{
+        e.preventDefault();
+    })
 });
 
 function sendRequest(url, method, async=false, isJSON=false, body={}){

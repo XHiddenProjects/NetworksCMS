@@ -4,12 +4,15 @@ include_once dirname(path: __DIR__).'/init.php';
 use NetWorks\libs\Plugins;
 use NetWorks\libs\Database;
 use NetWorks\libs\HTMLForm;
+use NetWorks\libs\Users;
 class Templates{
     protected Plugins $plugins;
     protected Database $db;
+    protected Users $users;
     protected array $keywords = [];
     public function __construct() {
             $this->plugins = new Plugins();
+            $this->users = new Users();
             if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db'))
                 $this->db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
             $this->keywords = [
@@ -73,6 +76,18 @@ class Templates{
                 },
                 '/<isURLQuery target=\"(.*?)\">((.|\n)*?)<\/isURLQuery>/i'=>function($e):string{
                     if(isset($_GET[$e[1]])) return $e[2];
+                    else return '';
+                },
+                '/<isAdmin>((.|\n)*?)<\/isAdmin>/'=>function($e): string{
+                    if($this->users->isAdmin()) return $e[1];
+                    else return '';
+                },
+                '/<isMod>((.|\n)*?)<\/isMod>/'=>function($e): string{
+                    if($this->users->isMod()) return $e[1];
+                    else return '';
+                },
+                '/<isMember>((.|\n)*?)<\/isMember>/'=>function($e): string{
+                    if($this->users->isMember()) return $e[1];
                     else return '';
                 }
             ];

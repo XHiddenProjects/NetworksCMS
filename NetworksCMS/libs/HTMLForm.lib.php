@@ -76,7 +76,7 @@ class HTMLForm{
         $disabledAttr = $disabled ? " disabled=\"disabled\"" : '';
         $requiredAttr = $required ? ' required="true"' : '';
         $icon = $icon ? "<i class=\"material-symbols-rounded\">".htmlspecialchars(string: $icon)."</i> ": '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">$icon".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"".htmlspecialchars(string: $type)."\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"{$classAttr}{$placeholderAttr}{$disabledAttr}{$requiredAttr}/>
         $descHtml";
@@ -99,7 +99,7 @@ class HTMLForm{
         $placeholderAttr = !empty($placeholder) ? " placeholder=\"".($this->langs[$placeholder]??'')."\"" : '';
         $requiredAttr = $required ? ' required="true"' : '';
         $icon = $icon ? "<i class=\"material-symbols-rounded\">".htmlspecialchars(string: $icon)."</i> ": '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $checkList = $checklist ? '<div class="checklist">
             <ul class="list-group list-group-flush mt-2 rounded">
                 <li class="list-group-item list-group-item-danger"><i class="material-symbols-rounded text-danger">close</i> '.$this->langs['psw_validation_8_chars'].'</li>
@@ -149,17 +149,20 @@ class HTMLForm{
     public function select(string $name, string|array $options, string $default='', string $class='', string $desc='', bool $required=false): string{
         if(!is_array(value: $options)){
             $options = explode(separator: ',',string: $options);
-            $options = array_combine(keys: array_keys(array: $options),values: array_values(array: $options));
         }
         $value = (new Utils())->isPOST(element: $name) ? $this->clean(text: $_POST[$name]) : $default;
         $classAttr = !empty($class) ? " class=\"form-select ".htmlspecialchars(string: $class)."\"" : ' class="form-select"';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $out = "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'')."</label>
         <select id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\"{$classAttr}{$requiredAttr}>
             ";
-        foreach($options as $value=>$label){
-            $out.="<option value=\"".htmlspecialchars(string: $value)."\"".($value===$default ? " selected=\"selected\"" : "").">".htmlspecialchars(string: $label)."</option>";
+        
+        foreach($options as $key => $label){
+            if(is_int(value: $key)){
+                $key = $label;
+            }
+            $out.="<option value=\"".htmlspecialchars(string: $key)."\"".($key===$default ? " selected=\"selected\"" : "").">".htmlspecialchars(string: $label)."</option>";
         }
         $out.="</select>
         $descHtml";
@@ -179,7 +182,7 @@ class HTMLForm{
         $classAttr = !empty($class) ? " class=\"form-check-input ".htmlspecialchars(string: $class)."\"" : ' class="form-check-input"';
         $requiredAttr = $required ? ' required="true"' : '';
         $disabledAttr = $disabled ? " disabled=\"disabled\"" : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $out = "<div class=\"form-check\">
             <label for=\"".htmlspecialchars(string: $name)."\">".($this->langs[$name]??'')."</label>
             <input type=\"radio\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".($this->langs[$name]??'')."\"".($value===$default&&$value ? " checked=\"checked\"" : "")."{$classAttr}{$requiredAttr}{$disabledAttr}/> 
@@ -202,7 +205,7 @@ class HTMLForm{
         $classAttr = !empty($class) ? " class=\"form-check-input ".htmlspecialchars(string: $class)."\"" : ' class="form-check-input"';
         $requiredAttr = $required ? ' required="true"' : '';
         $disabledAttr = $disabled ? " disabled=\"disabled\"" : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $out = "<div class=\"form-check\">
             <label for=\"".htmlspecialchars(string: $name)."\">".($this->langs[$name]??'').($required ? $this->required : '')."</label>
             <input type=\"checkbox\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"".($value===$default&&$value ? " checked=\"checked\"" : "")."{$classAttr}{$requiredAttr}{$disabledAttr}/> 
@@ -225,7 +228,7 @@ class HTMLForm{
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $placeholderAttr = !empty($placeholder) ? " placeholder=\"".($this->langs[$placeholder]??'')."\"" : '';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <textarea id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\"{$classAttr}{$placeholderAttr}{$requiredAttr}>".htmlspecialchars(string: $value)."</textarea>
         $descHtml";
@@ -241,7 +244,7 @@ class HTMLForm{
     public function file(string $name, string $class='', string $desc='', bool $required=false, string $allowed=''): string{
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $allowedAttr = !empty($allowed) ? " accept=\"".htmlspecialchars(string: $allowed)."\"" : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"file\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\"{$classAttr}{$requiredAttr}{$allowedAttr}/>
@@ -269,7 +272,7 @@ class HTMLForm{
         $value = (new Utils())->isPOST(element: $name) ? $this->clean(text: $_POST[$name]) : $default;
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"color\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"{$classAttr}{$requiredAttr}/>
         $descHtml";
@@ -287,7 +290,7 @@ class HTMLForm{
         $value = (new Utils())->isPOST(element: $name) ? $this->clean(text: $_POST[$name]) : $default;
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"range\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"{$classAttr}{$requiredAttr}/>
         $descHtml";
@@ -308,7 +311,7 @@ class HTMLForm{
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $requiredAttr = $required ? ' required="true"' : '';
         $icon = $icon ? "<i class=\"material-symbols-rounded\">".htmlspecialchars(string: $icon)."</i> ": '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">$icon".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"".htmlspecialchars(string: $type)."\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"{$classAttr}{$requiredAttr}/>
         $descHtml";
@@ -327,7 +330,7 @@ class HTMLForm{
         $value = (new Utils())->isPOST(element: $name) ? $this->clean(text: $_POST[$name]) : $default;
         $classAttr = !empty($class) ? " class=\"form-control ".htmlspecialchars(string: $class)."\"" : ' class="form-control"';
         $requiredAttr = $required ? ' required="true"' : '';
-        $descHtml = !empty($desc) ? '<span class="input-group-text text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
         $icon = $icon ? "<i class=\"material-symbols-rounded\">".htmlspecialchars(string: $icon)."</i> ": '';
         return "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">$icon".($this->langs[$name]??'').($required ? $this->required : '')."</label>
         <input type=\"number\" id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\" value=\"".htmlspecialchars(string: $value)."\"{$classAttr}{$requiredAttr}/>
