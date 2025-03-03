@@ -109,6 +109,8 @@ RewriteRule ^([^/]+)/?$ $1.php [L]
 # Add pretty URL for specific cases
 RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)$ $1.php/$2 [L]
 
+RewriteRule ^api/(.*)$ api.php/$1 [L]
+
 # Security Measures
 <IfModule mod_headers.c>
     Header set X-XSS-Protection "1; mode=block"

@@ -25,9 +25,14 @@ $lang = [
     'login'=>'Login',
     'logout'=>'Logout',
     'dashboard'=>'Dashboard',
-    'forum'=>'Forum',
     'security'=>'Security',
     'profile'=>'Profile',
+    # Social
+    'overall_social'=>'Overall Socials',
+    'social'=>'Social',
+    'forums'=>'Forums',
+    'topics'=>'Topics',
+    'replies'=>'Replies',
     #Date/Time
     'date'=>'Date',
     'time'=>'Time',
@@ -76,6 +81,8 @@ $lang = [
     <br/><br/>
     <a href="'.NW_DOMAIN.'/confirm" style="text-decoration: none; padding:1.5rem; border-radius: 5px; background-color:rgb(18, 105, 181); color: #ffffff; display: inline-block;">Confirm Account</a>',
     # Warnings
-    'noInstallChange'=>"Warning: You cannot change this after installation"
+    'noInstallChange'=>"Warning: You cannot change this after installation",
+    # Extras
+    'users'=>'Users'
 ];
 ?>

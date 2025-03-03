@@ -5,14 +5,17 @@ use NetWorks\libs\Plugins;
 use NetWorks\libs\Database;
 use NetWorks\libs\HTMLForm;
 use NetWorks\libs\Users;
+use NetWorks\libs\Utils;
 class Templates{
     protected Plugins $plugins;
     protected Database $db;
     protected Users $users;
+    protected Utils $utils;
     protected array $keywords = [];
     public function __construct() {
             $this->plugins = new Plugins();
             $this->users = new Users();
+            $this->utils = new Utils();
             if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db'))
                 $this->db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
             $this->keywords = [
@@ -32,7 +35,7 @@ class Templates{
                     if(isset($e[1])){
                         $langs = explode(separator: '|',string: $e[1]);
                         if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db'))
-                            $results = $this->db->selectTable(name: 'settings')->select(mode: Database::ASSOC);
+                            $results = $this->db->selectTable(name: 'settings')->select();
                             foreach($langs as $l){
                             if(isset($lang[$l])||isset($results[$l])){
                                 return $results[$l]??$lang[$l];
@@ -88,6 +91,11 @@ class Templates{
                 },
                 '/<isMember>((.|\n)*?)<\/isMember>/'=>function($e): string{
                     if($this->users->isMember()) return $e[1];
+                    else return '';
+                },
+                '/<isPath path="(.*?)">((.|\n)*?)<\/isPath>/'=>function($e): string{
+                    $e[1] = $this->utils->sanitizeSlashes(str: $e[1]);
+                    if(preg_match(pattern: "/$e[1]$/",subject: implode(separator: '/',array: NW_PATH_ARRAY))) return $e[2];
                     else return '';
                 }
             ];

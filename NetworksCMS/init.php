@@ -23,7 +23,7 @@ $path = preg_replace(pattern: '/\/?/',replacement: '',subject: preg_replace(patt
 !defined(constant_name: 'NW_UPLOADS') ? define(constant_name: 'NW_UPLOADS',value: "$domain/uploads") : '';
 !defined(constant_name: 'CHARSET') ? define(constant_name: 'CHARSET',value: 'utf-8') : '';
 !defined(constant_name: 'NW_TEMPLATES') ? define(constant_name: 'NW_TEMPLATES',value: NW_ROOT.NW_DS.'templates') : '';
-
+!defined(constant_name: 'NW_ASSETS') ? define(constant_name: 'NW_ASSETS',value: NW_ROOT.NW_DS.'assets') : '';
 if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db')){
     $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
     $tz = $db->selectTable(name: 'settings')->select();

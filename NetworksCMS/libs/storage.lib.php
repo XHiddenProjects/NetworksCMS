@@ -79,11 +79,12 @@ class Storage{
     }
     /**
      * Deletes a session
-     * @param string $name Sessions name
+     * @param string|null $name Sessions name
      * @return void
      */
-    public function deleteSession(string $name): void{
-        unset($_SESSION[$name]);
+    public function deleteSession(string|null $name=null): void{
+        if($name) unset($_SESSION[$name]);
+        else session_destroy();
     }
 }
 ?>

@@ -67,7 +67,7 @@ class Users{
     public function isAdmin(): bool{
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
         $user = $this->get();
-        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"admin\"",mode:Database::ASSOC);
+        $results = $db->selectTable(name: 'users')->select(conditions:"WHERE username=\"$user\" AND type=\"admin\"");
         $db->close();
         return is_array(value: $results)&&!empty($results) ? true : false;
     }
@@ -78,7 +78,7 @@ class Users{
     public function isMod(): bool{
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
         $user = $this->get();
-        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"moderator\"",mode:Database::ASSOC);
+        $results = $db->selectTable(name: 'users')->select(conditions:"WHERE username=\"$user\" AND type=\"moderator\"");
         $db->close();
         return is_array(value: $results)&&!empty($results) ? true : false;
     }
@@ -89,7 +89,7 @@ class Users{
     public function isMember(): bool{
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
         $user = $this->get();
-        $results = $db->selectTable(name: 'users')->select(conditions:"username=\"$user\" AND type=\"member\"",mode:Database::ASSOC);
+        $results = $db->selectTable(name: 'users')->select(conditions:"WHERE username=\"$user\" AND type=\"member\"");
         $db->close();
         return is_array(value: $results)&&!empty($results) ? true : false;
     }

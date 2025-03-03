@@ -172,10 +172,32 @@ if($utils->isREQUEST(element: 'install')){
             'permissions'=>'TEXT NOT NULL',
             'expires'=>'DATETIME NOT NULL'
         ]);
-        $db->selectTable(name: 'api')->insert(name: 'api',data: [
+        $db->selectTable(name: 'api')->insert(name: null,data: [
             'key'=>$utils->generateAPI(),
-            'permissions'=>'users,forums,replies,topics',
+            'permissions'=>'"users,forums,replies,topics"',
             'expires'=>date(format: 'Y-m-d H:i:s',timestamp: strtotime(datetime: '+500 years'))
+        ]);
+        $db->createTable(name: 'forums',options: [
+            'title'=>'VARCHAR(120) NOT NULL UNIQUE',
+            'created'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'edited'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'color'=>'VARCHAR(6) NOT NULL DEFAULT "#FFFFFF"',
+            'icon'=>'VARCHAR(200) NOT NULL DEFAULT "forum"'
+        ]);
+        $db->createTable(name: 'topics',options: [
+            'title'=>'VARCHAR(120) NOT NULL UNIQUE',
+            'body'=>'TEXT NOT NULL',
+            'author'=>'VARCHAR(120) NOT NULL',
+            'created'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'edited'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'forum'=>'VARCHAR(120) NOT NULL'
+        ]);
+        $db->createTable(name: 'replies',options: [
+            'body'=>'TEXT NOT NULL',
+            'author'=>'VARCHAR(120) NOT NULL',
+            'created'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'edited'=>'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            'topic'=>'VARCHAR(120) NOT NULL'
         ]);
         $db->close();
         $plugin->hook(hookName: 'install');

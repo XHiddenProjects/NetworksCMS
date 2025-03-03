@@ -9,3 +9,11 @@
     border-bottom-left-radius: var(--bs-border-radius);
     border-bottom-right-radius: var(--bs-border-radius);
 }
+.dashboard-body{
+    max-height: calc(100% - 120px);
+    overflow: auto;
+}
+.dashboard-body .nw_chart{
+    max-width: 100%;
+    max-height: 420px;
+}

@@ -150,7 +150,6 @@ class HTMLForm{
         if(!is_array(value: $options)){
             $options = explode(separator: ',',string: $options);
         }
-        $value = (new Utils())->isPOST(element: $name) ? $this->clean(text: $_POST[$name]) : $default;
         $classAttr = !empty($class) ? " class=\"form-select ".htmlspecialchars(string: $class)."\"" : ' class="form-select"';
         $requiredAttr = $required ? ' required="true"' : '';
         $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
@@ -348,6 +347,30 @@ class HTMLForm{
         $classAttr = !empty($class) ? " class=\"form-label ".htmlspecialchars(string: $class)."\"" : ' class="form-label"';
         $icon = $icon ? "<i class=\"material-symbols-rounded\">".htmlspecialchars(string: $icon)."</i> ": '';
         return "<label for=\"".htmlspecialchars(string: $name)."\"{$classAttr}>$icon".($this->langs[$name]??'').($required ? $this->required : '')."</label>";
+    }
+    /**
+     * Adds a dropdown list of Google Font icons/symbols
+     * @param string $name Name
+     * @param string $default Default value
+     * @param string $class Classlist
+     * @param string $desc Description
+     * @param bool $required Required
+     * @return string Dropdown list of icons
+     */
+    public function icons(string $name, string $default='', string $class='', string $desc='', bool $required=false): string{
+        $icons = json_decode(json: file_get_contents(filename: NW_ASSETS.NW_DS.'icons.json'),associative: true);
+        $classAttr = !empty($class) ? " class=\"form-select icon-dropdown".htmlspecialchars(string: $class)."\"" : ' class="form-select icon-dropdown"';
+        $requiredAttr = $required ? ' required="true"' : '';
+        $descHtml = !empty($desc) ? '<span class="text-muted">' . ($this->langs[$desc]??'') . '</span>' : '';
+        $out = "<label for=\"".htmlspecialchars(string: $name)."\" class=\"form-label\">".($this->langs[$name]??'')."</label>
+        <select id=\"".htmlspecialchars(string: $name)."\" name=\"".htmlspecialchars(string: $name)."\"{$classAttr}{$requiredAttr}>
+            ";
+        foreach($icons['icons'] as $icon){
+            $out.="<option value=\"".htmlspecialchars(string: $icon)."\"".($icon===$default ? " selected=\"selected\"" : "").">$icon</option>";
+        }
+        $out.="</select>
+        $descHtml";
+        return $out;
     }
 }
 ?>

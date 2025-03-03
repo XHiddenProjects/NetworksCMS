@@ -3,7 +3,7 @@ namespace NetWorks\libs;
 /**
  * Utilities library
  */
-include_once dirname(__DIR__).'/init.php';
+include_once dirname(path: __DIR__).'/init.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -39,9 +39,10 @@ class Utils{
     }
     /**
      * Returns the list of languages
-     * @return array
+     * @param bool $toJSON converts this to json
+     * @return array|bool|string Language array
      */
-    public function getLang(): array{
+    public function getLang($toJSON=false): array|bool|string{
         $files = new Files();
         $languages = [];
         foreach($files->scan(dir: NW_LANGUAGES) as $files){
@@ -51,6 +52,14 @@ class Utils{
             $languages[$name] = $lang['name'];
         }
         return $languages;
+    }
+    /**
+     * Returns the language dictionary
+     * @return array Dictionary list
+     */
+    public function getDictionary():array{
+        global $lang;
+        return $lang;
     }
     /**
      * Sends e-mail
@@ -138,19 +147,24 @@ class Utils{
      * @return string api key generated
      */
     public function generateAPI(): string{
-        $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
-        $results = $db->selectTable(name: 'api')->select(selector: 'key',mode: Database::BOTH);
-        $api = implode(separator: '-', array: str_split(string: substr(string: strtolower(string: md5(string: microtime().rand(min: 1000, max: 9999))), offset: 0, length: 44), length: 8));
-        if($results){
-            foreach($results as $row){
-                if(isset($row['row'])){
-                    while($api===$row['row']){
-                        $api = implode(separator: '-', array: str_split(string: substr(string: strtolower(string: md5(string: microtime().rand(min: 1000, max: 9999))), offset: 0, length: 44), length: 8));
-                    }
-                }
-            }
-        }
-        return $api;
+        if(file_exists(filename: NW_DATABASE.NW_DS.'NetworksCMS.db')){
+            $db = new Database(file: 'NetworksCMS', flags: Database::READ_ONLY);
+            $apiTable = $db->selectTable(name: 'api');
+            do {
+                $apiKey = bin2hex(string: random_bytes(length: 16));
+                $exists = $apiTable->select(selector: 'key', conditions: "WHERE key=\"$apiKey\"");
+            } while ($exists);
+            $db->close();
+        }else $apiKey = bin2hex(string: random_bytes(length: 16));
+        return $apiKey;
+    }
+    /**
+     * Sanitizes a string to be used as a regular expression
+     * @param string $str The string to sanitize
+     * @return string The sanitized string
+     */
+    public function sanitizeSlashes(string $str): string {
+        return preg_quote(str: $str, delimiter: '/');
     }
 }
 ?>

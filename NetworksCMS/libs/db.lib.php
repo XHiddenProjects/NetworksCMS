@@ -98,24 +98,38 @@ class Database{
      * Selects data from table
      * @param string|null $name Tables name
      * @param string|array $selector Select specific information. Use __*__ to select all
-     * @param string $conditions Conditions to simplify the search. **DO NOT INCLUDE "WHERE"**
-     * @param int $mode Controls how the next row will be returned to the caller. This value must be one of either
+     * @param string $conditions Conditions to simplify the search.
      * @param bool $ignoreAuto Ignores the select all array from selecting index 1 by default if array is only 1 item inside
      * @return bool|array The results of the selected query
      */
-    public function select(string|null $name=null, string|array $selector='*' ,string $conditions='', int $mode=Database::BOTH, bool $ignoreAuto=false): array|bool{
+    public function select(string|null $name=null, string|array $selector='*' ,string $conditions='', bool $ignoreAuto=false): array|bool{
         global $lang;
         $name = $this->table??$name;
         if(!$name) die($lang['noTableSelected']);
-        $sql = "SELECT ".(is_array(value: $selector) ? implode(separator: ',',array: $selector) : $selector)." FROM $name".($conditions ? " WHERE $conditions" : "");
-        $query=$this->db->query(query: $sql);
-        if($selector===$this::SELECT_ALL){
-            $responses = [];
-            while($row = $query->fetchArray(mode: $this::ASSOC))
-                $responses[] = $row;
-            return count(value: $responses)==1 ? ($ignoreAuto ? $responses : $responses[0]) : $responses;
-        }else
-            return $query->fetchArray(mode: $mode);
+        $sql = "SELECT ".(is_array(value: $selector) ? implode(separator: ',',array: $selector) : $selector)." FROM $name".($conditions ? " $conditions" : "");
+        $prep = $this->db->prepare(query: $sql);
+        if ($conditions) {
+            $conditionParts = explode(separator: ' AND ', string: $conditions);
+            foreach ($conditionParts as $part) {
+                if (strpos(haystack: $part, needle: '=') !== false) {
+                    [$column, $value] = explode(separator: '=', string: $part);
+                    $trimmedValue = trim(string: $value);
+                    if (is_numeric(value: $trimmedValue)){
+                        if (strpos(haystack: $trimmedValue, needle: '.') !== false)
+                            $prep->bindValue(param: ":$column", value: $trimmedValue, type: SQLITE3_FLOAT);
+                        else 
+                            $prep->bindValue(param: ":$column", value: $trimmedValue, type: SQLITE3_INTEGER);
+                    } else 
+                        $prep->bindValue(param: ":$column", value: $trimmedValue, type: SQLITE3_TEXT);
+                }
+            }
+        }
+        $query = $prep->execute();
+        $responses = [];
+        while ($row = $query->fetchArray(mode: SQLITE3_ASSOC)) {
+            $responses[] = $row;
+        }
+        return count(value: $responses) == 1 ? ($ignoreAuto ? $responses : $responses[0]) : $responses;
     }
     /**
      * Inserts data into the table

@@ -10,9 +10,17 @@ $(document).ready(()=>{
     });
     $('.tab').on('click',(e)=>{
         e.preventDefault();
-    })
+    });
 });
-
+/**
+ * Sends a XMLHttpRequest 
+ * @param {string} url URL to send
+ * @param {string} method POST/GET methods
+ * @param {boolean} [async=false] Async data
+ * @param {boolean} [isJSON=false] Convert to JSON object 
+ * @param {JSON} [body={}] Body request
+ * @returns {string|JSON|false} Returns string/json object, otherwise false
+ */
 function sendRequest(url, method, async=false, isJSON=false, body={}){
     const xhr = new XMLHttpRequest();
     xhr.open(method.toLocaleUpperCase(), url, async);
@@ -25,4 +33,53 @@ function sendRequest(url, method, async=false, isJSON=false, body={}){
     if(method.toLocaleLowerCase()==='get') xhr.send();
     else xhr.send(body)
     return isJSON ? JSON.parse(response) : response;
+}
+/**
+ * Returns chart years based on starting year, updates every 5 years
+ * @returns {number[]}
+ */
+function chartRangeYear() {
+    const year = new Date().getFullYear();
+    let startYear;
+    if(sessionStorage.getItem('nw_chart_range')){
+        if(year<=parseInt(sessionStorage.getItem('nw_chart_range'))+5){
+            startYear = parseInt(sessionStorage.getItem('nw_chart_range'));
+        }else{
+            sessionStorage.setItem('nw_chart_range',year);
+            startYear = year;
+        }
+    }else{
+        sessionStorage.setItem('nw_chart_range',year);
+        startYear = year;
+    }
+    const years = [];
+    for(i=0;i<6;i++){
+        years.push(startYear+i);
+    }
+    return years;
+}
+/**
+ * Generates a random color
+ * @param {'hex'|'rgb'} [type='hex'] Color type format
+ * @param {number} [alpha=1] Transparency 0-1
+ * @param {number} [amount=1] Amount of colors to generate
+ * @returns {string[]} Color list
+ */
+function generateColor(type='hex', alpha=1, amount=1){
+    const colors = [];
+    for(let i = 0; i < amount; i++){
+        let color;
+        if(type === 'hex'){
+            const hex = Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+            color = `#${hex}${alphaHex}`;
+        } else if(type === 'rgb'){
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            color = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+        colors.push(color);
+    }
+    return colors;
 }

@@ -138,3 +138,9 @@ i[class^='material-symbols-']{
     0% { transform: rotate(0deg) }
     100% { transform: rotate(360deg) }
 }
+
+/*Icon Dropdown*/
+.icon-dropdown{
+    font-family: 'Material Symbols Rounded';
+    font-size: 2rem;
+}

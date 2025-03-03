@@ -10,7 +10,9 @@
 </nav>
 <div class="offcanvas offcanvas-start" tabindex="-1" id="dashboardOffcanvas" aria-labelledby="dashboardOffcanvas">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="dashboardOffcanvas"><a href="{{ROOT}}" class="text-decoration-none link-dark"><lang>title|projectName</lang></a></h5>
+        <h5 class="offcanvas-title" id="dashboardOffcanvas">
+            <a href="{{ROOT}}" class="text-decoration-none link-dark fs-3"><lang>title|projectName</lang></a>
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
@@ -27,6 +29,26 @@
                     </div>
                 </li></a>
             </isAdmin> -->
+            <hook>dashboardNav</hook>
         </ul>
     </div>
 </div>
+<isPath path="dashboard">
+    <div class="container-fluid dashboard-body">
+        <isAdmin>
+            <div class="row">
+                <div class="col">
+                    <canvas class="nw_chart" id="users_chart"></canvas>
+                </div>
+                <div class="col">
+                    <canvas class="nw_chart" id="users_social"></canvas>
+                </div>
+            </div>
+        </isAdmin>
+        <div class="row">
+            <div class="col">
+                <canvas class="nw_chart" id="users_self_social"></canvas>
+            </div>
+        </div>
+    </div>
+</isPath>

@@ -16,7 +16,7 @@ if($utils->isREQUEST(element: 'check')){
     $username = htmlspecialchars(string: $_REQUEST['username']);
     $email = filter_var(value: filter_var(value: $_REQUEST['email'], filter: FILTER_VALIDATE_EMAIL),filter: FILTER_SANITIZE_EMAIL);
     $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
-    $results = $db->selectTable(name: 'users')->select(conditions: "username=\"$username\" OR email=\"$email\"", mode: Database::ASSOC);
+    $results = $db->selectTable(name: 'users')->select(conditions: "WHERE username=\"$username\" OR email=\"$email\"");
     echo json_encode(value: ['canPass'=>(empty($results) ? true : false)],flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     $db->close();
 }
@@ -33,12 +33,12 @@ if($utils->isREQUEST(element: 'signup')){
         $psw = password_hash(password: $_REQUEST['psw'],algo: PASSWORD_DEFAULT);
         $db = new Database(file: 'NetworksCMS',flags: Database::OPEN_READWRITE);
         $table = $db->selectTable(name: 'users');
-        $admin = $table->select(conditions:'type="admin"',mode: Database::ASSOC);
+        $admin = $table->select(conditions:'WHERE type="admin"');
         $confirmed = $utils->sendMail(from: [$admin['email']=>"{$admin['fname']} {$admin['lname']}"],
         to: [$email=>"$fname $lname"],
         subject: $lang['email_confirm_user_subject'],
         body: $lang['email_confirm_user_body']) ? 0 : 1;
-        $results = $db->selectTable(name: 'users')->select(conditions: "username=\"$username\" OR email=\"$email\"", mode: Database::ASSOC);
+        $results = $db->selectTable(name: 'users')->select(conditions: "WHERE username=\"$username\" OR email=\"$email\"");
         if(!empty($results)){
             echo json_encode(value: ['created'=>false],flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
         }else{
@@ -100,7 +100,7 @@ if($utils->isREQUEST(element: 'logout')){
     ],name:null,conditions: 'username="'.$user->get().'"');
     $db->close();
     $storage->deleteCookie(name: session_name());
-    $storage->deleteSession(name: session_name());
+    $storage->deleteSession();
     echo json_encode(value: ['loggedOut'=>true],flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 }
 if($utils->isREQUEST(element: 'login')){
@@ -112,7 +112,7 @@ if($utils->isREQUEST(element: 'login')){
         $remember = filter_var(value: $_REQUEST['remember'],filter: FILTER_VALIDATE_BOOLEAN);
         $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
         $pass = true;
-        $select = $db->selectTable(name: 'users')->select(conditions: "username='$auth' OR email='$auth'");
+        $select = $db->selectTable(name: 'users')->select(conditions: "WHERE username='$auth' OR email='$auth'");
         if(empty($select)) $pass = false;
         else{
             if(!password_verify(password: $psw,hash: $select['psw'])) $pass=false;

@@ -10,7 +10,7 @@ $f = new Files();
 $plugins = new Plugins();
 if($f->exists(path: NW_DATABASE.NW_DS.'NetworksCMS.db')){
     $db = new Database(file: 'NetworksCMS',flags: Database::READ_ONLY);
-    $results = $db->selectTable(name: 'settings')->select(mode: Database::ASSOC);
+    $results = $db->selectTable(name: 'settings')->select();
     $db->close();
 }else $results = [];
 if(!$f->exists(path: 'installed.bin.key')&&!preg_match(pattern: '/install/',subject: NW_PATH)) header(header: 'Location: '.NW_DOMAIN.'/install');
